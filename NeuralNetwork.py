@@ -1,4 +1,5 @@
 from torchvision.models import resnet50, ResNet50_Weights
+import genericFunction as GF
 
 #--------------------------------------------------
 #
