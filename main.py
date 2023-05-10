@@ -9,14 +9,18 @@ import time
 from pathlib import Path
 import os
 import copy
-import json
 from torchvision.io import read_image, ImageReadMode
 from torchvision.models import resnet50, ResNet50_Weights
 
+
+from NeuralNetwork import ReteNeurale,features
+import genericFunction as GF
 import importCaltech
-
-[Caltech101,data_loader] = importCaltech.importData()
-
+import task1
 
 
+
+[caltech101,data_loader] = importCaltech.importData()
+print('\n')
+task1.createData(caltech101,ReteNeurale,features)
 
