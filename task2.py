@@ -1,6 +1,3 @@
-import torch
-import torch.nn as nn
-import torchvision
 import csv
 import numpy
 import matplotlib.pyplot as plt
@@ -10,31 +7,59 @@ import task1
 
 
 def start(Caltech101, ReteNeurale, features):
-    fileVectorLast = open('Data\dataVectorLast.csv', 'r')
-    readerVectorLast = csv.reader(fileVectorLast, delimiter=';')
-    res = numpy.array(list(readerVectorLast))
+    #ask what image
+    ID_img = int(input("insert an ID for an Image (odd number):"))
+    ID_space = input("select space: \n 1 - layer3\n 2 - avg\n 3 - last\n")
 
-    [vector_last, vector_avgpool, vector_layer3, class_id] = task1.Extractor(3, Caltech101, ReteNeurale, features)
+    fileVector ={}
+    if ID_space == '1':
+        fileVector = open('Data\dataVectorLayer3.csv', 'r')
+    elif ID_space == '2':
+        fileVector = open('Data\dataVectorAVGPool.csv', 'r')
+    elif ID_space == '3':
+        fileVector = open('Data\dataVectorLast.csv', 'r')
 
-    img,label = Caltech101[3]
-    plt.imshow(img)
-    plt.show()
+
+    readerVector = csv.reader(fileVector, delimiter=';')
+    DB = numpy.array(list(readerVector))
+
+    [vector_last, vector_avgpool, vector_layer3, class_id] = task1.Extractor(ID_img, Caltech101, ReteNeurale, features)
+
+
+    img,label = Caltech101[ID_img]
+    #plt.imshow(img)
+    #plt.show()
+
     listaSim = []
-    for i in range(len(res)):
-        d= distanza(vector_last.detach().numpy(), res[i])
+    for i in range(len(DB)):
+        d = -1
+        if ID_space == '1':
+            d = distanza(vector_layer3.detach().numpy(), DB[i])
+        elif ID_space == '2':
+            d = distanza(vector_avgpool.detach().numpy(), DB[i])
+        elif ID_space == '3':
+            d = distanza(vector_last.detach().numpy(), DB[i])
+
         listaSim.append((i*2,d))
 
-    #print(listaSim)
-    #print(listaSim[0][1])
+
     min= listaSim[0]
-    for i in range(len(res)):
+    for i in range(len(DB)):
         if listaSim[i][1] < min[1]:
             min = listaSim[i]
 
-    print(min[0])
+    print("ID immagine piú simile: " , min[0])
     imgRes, labelRes = Caltech101[min[0]]
-    plt.imshow(imgRes)
+    #plt.imshow(imgRes)
+    #plt.show()
+
+    f, axarr = plt.subplots(2, 1)
+    axarr[0].imshow(img)
+    axarr[0].set_title("immagine scelta")
+    axarr[1].imshow(imgRes)
+    axarr[1].set_title("immagine più simile nel DB")
     plt.show()
+
 def distanza(v1, v2):
     if len(v1) != len(v2) :
         print("error")
