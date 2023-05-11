@@ -1,32 +1,45 @@
 import torch
 import torch.nn as nn
-
+import torchvision
+import csv
+from NeuralNetwork import *
 import genericFunction as GF
-
-def createData(Caltech101,ReteNeurale,features):
-    d = Extractor(1,Caltech101,ReteNeurale,features)
-    # print(d)
-    print(len(d[0]))
-    print(len(d[1]))
-    print(len(d[2]))
-    print(d[3])
+from tqdm import tqdm
 
 
-def Extractor(imgID,Caltech101,ReteNeurale,features):
-    img, label = Caltech101[imgID]
-    tensImg = GF.IMGtoTensor(img)
-    prediction = ReteNeurale(tensImg).squeeze(0).softmax(0)
-    class_id = prediction.argmax().item()
+class Task1(): 
+    def __init__(self) -> None:
+        pass
 
-    vector_last = ReteNeurale(tensImg).squeeze(0)
+    def getFC(self,tensor, ReteNeurale): 
+        return ReteNeurale(tensor).squeeze(0)
 
-    temp_tensor_avgpool = torch.tensor(features['avgpool'].cpu().numpy().squeeze(0))
-    tensor_avgpool = temp_tensor_avgpool.reshape(1, 1, -1)
-    k = nn.AvgPool1d(2, stride=2)
-    vector_avgpool = k(tensor_avgpool).flatten()
+    def getHook(self,tensorName):
+        return features[tensorName].squeeze(0)
 
-    tensor_layer3 = torch.tensor(features['layer3'].cpu().numpy().squeeze(0))
-    m = nn.AvgPool2d(14, stride=1)
-    vector_layer3 = m(tensor_layer3).flatten()
+    def getAvgpoolFlatten(self,tensorName):
+        output = self.getHook(tensorName).reshape(1,1,-1)
+        k = nn.AvgPool1d(2,stride=2)
+        return k(output).flatten()
 
-    return [vector_last, vector_avgpool, vector_layer3, class_id]
+    def getLayer3Flatten(self,tensorName):
+        m = nn.AvgPool2d(14,stride=1)
+        return m(self.getHook(tensorName)).flatten()
+    
+    def processing(self,dataset,model):
+        #lista di tuple di tensori (id,fc_tensor)
+        fc_list = list()
+        #lista di tuple di tensori, normale e flattened (id, normale, flattened)
+        avgpool_list = list()
+        #lista di tuple di tensori (id, layer3_tensor)
+        layer3_list = list()
+
+        #for i in tqdm(range(dataset.__len__())):
+        for i in tqdm(range(2)):
+            img, label = dataset[i]
+            if i % 2 == 0 and torchvision.transforms.functional.get_image_num_channels(img) != 1:
+                tensor = GF.IMGtoTensor(img)
+                fc_list.append((i,self.getFC(tensor,model)))
+                tuple = (i,self.getHook('avgpool'),self.getAvgpoolFlatten('avgpool'))
+                avgpool_list.append(tuple)
+                layer3_list.append((i,self.getLayer3Flatten('layer3')))

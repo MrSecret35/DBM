@@ -12,15 +12,20 @@ import copy
 from torchvision.io import read_image, ImageReadMode
 from torchvision.models import resnet50, ResNet50_Weights
 
-
-from NeuralNetwork import ReteNeurale,features
+from NeuralNetwork import ReteNeurale, features
 import genericFunction as GF
 import importCaltech
-import task1
 
 
+from task1 import Task1
 
-[caltech101,data_loader] = importCaltech.importData()
-print('\n')
-task1.createData(caltech101,ReteNeurale,features)
+def main():
+    [caltech101, data_loader] = importCaltech.importData()
+    task1 = Task1()
+    task1.processing(caltech101,ReteNeurale)
+
+if __name__ == "__main__":
+    main()
+
+
 
