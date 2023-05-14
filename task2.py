@@ -1,15 +1,22 @@
 import csv
 import numpy
 import matplotlib.pyplot as plt
+import genericFunction as GF
 import math
+from tqdm import tqdm
 
-import task1
+from task1 import Task1
 
 
-def start(Caltech101, ReteNeurale, features):
+def start(Caltech101, ReteNeurale):
+    task1 = Task1()
+
+    #TODO: fare i controlli per gli ID
     #ask what image
     ID_img = int(input("insert an ID for an Image (odd number):"))
+
     ID_space = input("select space: \n 1 - layer3\n 2 - avg\n 3 - last\n")
+
 
     fileVector ={}
     if ID_space == '1':
@@ -23,15 +30,20 @@ def start(Caltech101, ReteNeurale, features):
     readerVector = csv.reader(fileVector, delimiter=';')
     DB = numpy.array(list(readerVector))
 
-    [vector_last, vector_avgpool, vector_layer3, class_id] = task1.Extractor(ID_img, Caltech101, ReteNeurale, features)
+    img, label = Caltech101[ID_img]
 
 
-    img,label = Caltech101[ID_img]
-    #plt.imshow(img)
-    #plt.show()
+    [vector_last, vector_avgpool, vector_layer3, class_id] = task1.Extractor(ID_img, Caltech101, ReteNeurale)
+
+
+    # non indipendenti (vanno chiamati in ordine)
+    #tensor = GF.IMGtoTensor(img)
+    #vector_last = task1.getFC(tensor, ReteNeurale)
+    #vector_avgpool = task1.getAvgpoolFlatten('avgpool')
+    #vector_layer3 = task1.getLayer3Flatten('layer3')
 
     listaSim = []
-    for i in range(len(DB)):
+    for i in tqdm(range(len(DB))):
         d = -1
         if ID_space == '1':
             d = distanza(vector_layer3.detach().numpy(), DB[i])
@@ -42,7 +54,7 @@ def start(Caltech101, ReteNeurale, features):
 
         listaSim.append((i*2,d))
 
-
+    #TODO: trovare gli n simili (non solo 1)
     min= listaSim[0]
     for i in range(len(DB)):
         if listaSim[i][1] < min[1]:

@@ -25,7 +25,6 @@ def get_features(name,features):
 def IMGtoTensor(img):
   if torchvision.transforms.functional.get_image_num_channels(img) != 1:
     proc_img = preprocess(img).unsqueeze(0)
-    #print(torchvision.transforms.functional.get_image_size(proc_img))
     return proc_img
   else:
     print ("incompatiable image format -- try another one")
