@@ -18,6 +18,7 @@ import importCaltech
 
 from task1 import Task1
 import task2
+import task3
 
 def main():
 	[caltech101, data_loader] = importCaltech.importData()
@@ -39,11 +40,21 @@ def main():
 			task1.processing(caltech101,ReteNeurale)
 		elif selection == '2':
 			task2.start(caltech101, ReteNeurale)
+		elif selection == '3':
+			task3.start(caltech101, ReteNeurale)
 		elif selection == '8':
 			break
 		elif selection == '9':
-			[vector_last, vector_avgpool, vector_layer3, class_id] = task1.Extractor(0, caltech101, ReteNeurale)
-			print(vector_avgpool)
+			img, label = caltech101[13]
+			print(label)
+			img, label = caltech101[1666]
+			print(label)
+			img, label = caltech101[1667]
+			print(label)
+			img, label = caltech101[1665]
+			print(label)
+			img, label = caltech101[7121]
+			print(label)
 		else:
 			print("Unknown Option Selected!")
 
