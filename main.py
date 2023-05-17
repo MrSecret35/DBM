@@ -27,6 +27,7 @@ def main():
 	menu = {}
 	menu['1']="Save CSV even data"
 	menu['2']="make a range query (range = 4)"
+	menu['3']= "make a query on label"
 	menu['8']="Exit"
 	menu['9']="Test"
 	while True:
