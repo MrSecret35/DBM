@@ -22,12 +22,15 @@ def start(Caltech101, ReteNeurale):
             vectorLeader = [x/2 for x in vectorLeader]
         dataset[i]= vectorLeader
 
-    #simList = task2.getSimilarityVector(dataset[N_etichetta],dataset)
-    #label = Caltech101.features["label"].int2str(N_etichetta)
-    #print(label)
-
-    #print(Caltech101.annotation_categories)
     # calcolare i più simili alla nostra etichetta
+    simList = task2.getSimilarityVector(dataset[N_etichetta],dataset)
+    simList = sorted(simList, key=lambda tup: tup[1])
+
+    print("etichetta: ", N_etichetta, "quella più simile: ", int(simList[1][0]/2))
+    print("classe: ",
+          Caltech101.annotation_categories[N_etichetta],
+          "quella più simile: ",
+          Caltech101.annotation_categories[int(simList[1][0]/2)])
 
 def getDatasetLabel(Caltech101,ID_space):
     fileVector = {}
