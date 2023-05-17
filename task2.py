@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import genericFunction as GF
 import math
 import torch
+import database as DBFunc
 from tqdm import tqdm
 
 from task1 import Task1
@@ -23,17 +24,13 @@ def start(Caltech101, ReteNeurale):
     n = int(input("insert n (numero immagini):"))
 
     # ask ID spase
-    ID_space = ''
-    while ID_space != '1' and ID_space != '2' and ID_space != '3':
-        ID_space = input("select space: \n 1 - layer3\n 2 - avg\n 3 - last\n")
-        if(ID_space != '1' and ID_space != '2' and ID_space != '3'):
-            print("insert a valid selection")
+    ID_space = DBFunc.IDSpace()
 
     # take queryVector: vector taken by NeuralNetwork by ID_img and ID_space
     QueryVector = task1.getVectorbyID(ID_img_query, Caltech101, ReteNeurale, ID_space)
 
     # take DB: matrix corresponding to the csv file indicated by the ID_space
-    DB = getDB(ID_space)
+    DB = DBFunc.getDB(ID_space)
 
     #get listaSim: list containing tuples (2 elements) corresponding to the ID of the img and its similarity with the query img
     listaSim = getSimilarityVector(QueryVector,DB)
@@ -87,20 +84,3 @@ def printNImage(img, list, n, dataset):
         axarr[1][i].imshow(imgRes)
         axarr[1][i].set_title("img num: " + str(i+1))
     plt.show()
-
-# getDB(ID_space)
-# ID_space: id of the vector space of the features to collect the data
-# reads the desired vector space from file and returns it as a matrix
-def getDB(ID_space):
-    fileVector = {}
-    if ID_space == '1':
-        fileVector = open('Data\dataVectorLayer3.csv', 'r')
-    elif ID_space == '2':
-        fileVector = open('Data\dataVectorAVGPool.csv', 'r')
-    elif ID_space == '3':
-        fileVector = open('Data\dataVectorLast.csv', 'r')
-
-    readerVector = csv.reader(fileVector, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
-    DB = numpy.array(list(readerVector))
-
-    return DB
