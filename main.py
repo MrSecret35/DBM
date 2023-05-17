@@ -16,9 +16,11 @@ from NeuralNetwork import ReteNeurale, features
 import genericFunction as GF
 import importCaltech
 
+import database as DBFunc
 from task1 import Task1
 import task2
 import task3
+import task4
 
 def main():
 	[caltech101, data_loader] = importCaltech.importData()
@@ -27,7 +29,8 @@ def main():
 	menu = {}
 	menu['1']="Save CSV even data"
 	menu['2']="make a range query (range = 4)"
-	menu['3']= "make a query on label"
+	menu['3']="make a query on label"
+	menu['4']="Associating Label"
 	menu['8']="Exit"
 	menu['9']="Test"
 	while True:
@@ -43,19 +46,16 @@ def main():
 			task2.start(caltech101, ReteNeurale)
 		elif selection == '3':
 			task3.start(caltech101, ReteNeurale)
+		elif selection == '4':
+			task4.processing(caltech101, ReteNeurale)
 		elif selection == '8':
 			break
 		elif selection == '9':
-			img, label = caltech101[13]
-			print(label)
-			img, label = caltech101[1666]
-			print(label)
-			img, label = caltech101[1667]
-			print(label)
-			img, label = caltech101[1665]
-			print(label)
-			img, label = caltech101[7121]
-			print(label)
+			DB= DBFunc.getDB(3)
+			origin = np.array([[0, 0, 0], [0, 0, 0]])  # origin point
+
+			plt.quiver(DB[0],DB[1],DB[2])
+			plt.show()
 		else:
 			print("Unknown Option Selected!")
 

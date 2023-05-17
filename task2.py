@@ -14,11 +14,7 @@ def start(Caltech101, ReteNeurale):
     task1 = Task1()
 
     #ask what image
-    ID_img_query=-1
-    while ID_img_query==-1 or ID_img_query >= len(Caltech101) :
-        ID_img_query = int(input("insert an ID for an Image (odd number)(max " + str(len(Caltech101)-1) + "):  "))
-        if ID_img_query >= len(Caltech101):
-            print("insert a valid selection (max " + str(len(Caltech101)-1) + "):  ")
+    ID_img_query= GF.getIDImg(Caltech101)
 
     # ask N image to print
     n = int(input("insert n (numero immagini):"))

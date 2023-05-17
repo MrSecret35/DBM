@@ -1,6 +1,8 @@
 import csv
 import numpy
 
+# IDSpace()
+# takes as input an ID that identifies the vector space of the features
 def IDSpace():
     ID_space = ''
     while ID_space != '1' and ID_space != '2' and ID_space != '3':

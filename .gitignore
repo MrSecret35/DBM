@@ -1,3 +1,4 @@
 /caltech101/
 /*.csv
 /Data/
+__pycache__/
