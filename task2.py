@@ -60,6 +60,11 @@ def distance(v1, v2):
 
     return torch.cdist(v1,v2,1)
 
+# getSimilarityVector(query, dataset)
+# query:    vector from which to calculate the similarity
+# dataset   list of vector (same size query)
+# return a list containing tuples (2 elements)
+#   corresponding to the ID of the img and its similarity with the query img
 def getSimilarityVector(query, dataset):
     listaSim = []
     for i in tqdm(range(len(dataset))):
@@ -67,16 +72,25 @@ def getSimilarityVector(query, dataset):
         listaSim.append((i*2,d))
     return listaSim
 
-def printNImage(img, lista, n, dataset):
+# printNImage(img, lista, n, dataset)
+# img:      image to be printed in the first row
+# list:     list from which to get the ID of img for the second row
+# n:        number of img to print in the second line
+# dataset:  dataset to get the img from id
+# prints 2 lines, the first containing img and the second containing the first n img of the list
+def printNImage(img, list, n, dataset):
     f, axarr = plt.subplots(2, n)
     axarr[0][0].imshow(img)
     axarr[0][0].set_title("immagine scelta")
     for i in range(n):
-        imgRes, labelRes = dataset[lista[i][0]]
+        imgRes, labelRes = dataset[list[i][0]]
         axarr[1][i].imshow(imgRes)
         axarr[1][i].set_title("img num: " + str(i+1))
     plt.show()
 
+# getDB(ID_space)
+# ID_space: id of the vector space of the features to collect the data
+# reads the desired vector space from file and returns it as a matrix
 def getDB(ID_space):
     fileVector = {}
     if ID_space == '1':
