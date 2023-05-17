@@ -74,19 +74,17 @@ class Task1():
 	def getVectorbyID(self, imgID, dataset, model, ID_space):
 		img, label = dataset[imgID]
 		tensor = GF.IMGtoTensor(img)
-		resVector=[]
-
+		resVector = []
 
 		vector_last = self.getFC(tensor, model)
 		vector_avgpool = self.getAvgpoolFlatten('avgpool')
 		vector_layer3 = self.getLayer3Flatten('layer3')
 
-		if ID_space == '1':
+		if ID_space == 1:
 			resVector = vector_layer3.detach().numpy()
-		elif ID_space == '2':
+		elif ID_space == 2:
 			resVector = vector_avgpool.detach().numpy()
-		elif ID_space == '3':
+		elif ID_space == 3:
 			resVector = vector_last.detach().numpy()
-
 
 		return resVector
