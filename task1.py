@@ -53,16 +53,20 @@ class Task1():
 
 		print("Finish csv data Creation")
 
+	# Extractor(imgID, dataset, model)
+	# imgID: ID dell'immagine di cui estrarre le features
+	# dataset : dataset dell'img
+	# model: rete neurale
 	def Extractor(self, imgID, dataset, model):
 		img, label = dataset[imgID]
 		tensor = GF.IMGtoTensor(img)
 
-		prediction = model(tensor).squeeze(0).softmax(0)
-		class_id = prediction.argmax().item()
+		#prediction = model(tensor).squeeze(0).softmax(0)
+		#class_id = prediction.argmax().item()
 
 		vector_last = self.getFC(tensor, model)
 		vector_avgpool = self.getAvgpoolFlatten('avgpool')
 		vector_layer3 = self.getLayer3Flatten('layer3')
 
 
-		return [vector_last, vector_avgpool, vector_layer3, class_id]
+		return [vector_last, vector_avgpool, vector_layer3]
