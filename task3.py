@@ -3,7 +3,7 @@ import numpy
 import task2
 def start(Caltech101, ReteNeurale):
     # prendere etichetta
-    N_etichetta = input("inserisci l'etichetta (tra 0 e 94): ")
+    N_etichetta = int(input("inserisci l'etichetta (tra 0 e 94): "))
     # suddividere il DB in etichette
     ID_space = ''
     while ID_space != '1' and ID_space != '2' and ID_space != '3':
@@ -22,10 +22,11 @@ def start(Caltech101, ReteNeurale):
             vectorLeader = [x/2 for x in vectorLeader]
         dataset[i]= vectorLeader
 
-    simList = task2.getSimilarityVector(dataset[int(N_etichetta)],dataset)
-    #label = Caltech101.features["label"].int2str(int(N_etichetta))
+    #simList = task2.getSimilarityVector(dataset[N_etichetta],dataset)
+    #label = Caltech101.features["label"].int2str(N_etichetta)
     #print(label)
 
+    #print(Caltech101.annotation_categories)
     # calcolare i più simili alla nostra etichetta
 
 def getDatasetLabel(Caltech101,ID_space):
