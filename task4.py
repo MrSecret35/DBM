@@ -24,7 +24,7 @@ def processing(Caltech101,ReteNeurale):
     elif ID_method == 2:
         classID = getCIDOneNN(QueryVector, Caltech101, DB)
     elif ID_method == 3:
-        print("ciao")
+        classID = getCIDKNN(QueryVector, Caltech101, DB)
 
     GF.printIMG(ID_img_query,"Label ottenuta: " + Caltech101.annotation_categories[classID],Caltech101)
 
@@ -60,3 +60,31 @@ def getCIDOneNN(imgQueryVector, dataset, DB):
 
     img, label= dataset[ DBFunc.getIDfromRow(simList[0][0]) ]
     return label
+
+def getCIDKNN(imgQueryVector, dataset, DB):
+    k = 20
+    simList = task2.getSimilarityVector(imgQueryVector, DB)
+    simList = sorted(simList, key=lambda tup: tup[1])
+
+
+    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0]) ]
+    listLabel= []
+    for i in range(k):
+        img, label = dataset[DBFunc.getIDfromRow(simList[i][0])]
+        listLabel.append(label)
+        
+    return findMajorityElement(listLabel)
+
+
+def findMajorityElement(nums):
+    m = -1
+    i = 0
+    for j in range(len(nums)):
+        if i == 0:
+            m = nums[j]
+            i = 1
+        elif m == nums[j]:
+            i = i + 1
+        else:
+            i = i - 1
+    return m
