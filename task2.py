@@ -62,7 +62,7 @@ def getSimilarityVector(query, dataset):
     listaSim = []
     for i in tqdm(range(len(dataset))):
         d = distance(query, dataset[i])
-        listaSim.append((i*2,d))
+        listaSim.append((i+1,d))
     return listaSim
 
 # printNImage(img, lista, n, dataset)
@@ -76,7 +76,7 @@ def printNImage(img, list, n, dataset):
     axarr[0][0].imshow(img)
     axarr[0][0].set_title("immagine scelta")
     for i in range(n):
-        imgRes, labelRes = dataset[list[i][0]]
+        imgRes, labelRes = dataset[ DBFunc.getIDfromRow(list[i][0])]
         axarr[1][i].imshow(imgRes)
         axarr[1][i].set_title("img num: " + str(i+1))
     plt.show()
