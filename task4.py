@@ -20,10 +20,9 @@ def processing(Caltech101,ReteNeurale):
     #calcolare la classe
     classID = -1;
     if ID_method == 1:
-        print("ciao")
         classID= getCIDAVG(QueryVector ,Caltech101, DB)
     elif ID_method == 2:
-        print("ciao")
+        classID = getCIDOneNN(QueryVector, Caltech101, DB)
     elif ID_method == 3:
         print("ciao")
 
@@ -52,5 +51,12 @@ def getCIDAVG(imgQueryVector, dataset, DB):
     simList = task2.getSimilarityVector(imgQueryVector, DBLabelAVG)
     simList = sorted(simList, key=lambda tup: tup[1])
 
-    return int(simList[0][0]/2)
+    return int(simList[0][0]-1)
 
+def getCIDOneNN(imgQueryVector, dataset, DB):
+
+    simList = task2.getSimilarityVector(imgQueryVector, DB)
+    simList = sorted(simList, key=lambda tup: tup[1])
+
+    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0]) ]
+    return label
