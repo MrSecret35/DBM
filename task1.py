@@ -29,15 +29,19 @@ class Task1():
 		return m(self.getHook(tensorName)).flatten()
 
 	def processing(self,dataset,model):
+		
+		fileIDtoRow = open('Data\IDtoRow.csv', 'w', newline='')
 		fileVectorLast = open('Data\dataVectorLast.csv', 'w', newline='')
 		fileVector_avgpool = open('Data\dataVectorAVGPool.csv', 'w', newline='')
 		fileVector_layer3= open('Data\dataVectorLayer3.csv', 'w', newline='')
 
+		writerID = csv.writer(fileIDtoRow, delimiter=';')
 		writerVL = csv.writer(fileVectorLast, delimiter=';')
 		writerVA = csv.writer(fileVector_avgpool, delimiter=';')
 		writerV3 = csv.writer(fileVector_layer3, delimiter=';')
 
 		print("Start csv data Creation")
+		row=1
 		for i in tqdm(range(dataset.__len__())):
 			img, label = dataset[i]
 			if i % 2 == 0 and torchvision.transforms.functional.get_image_num_channels(img) != 1:
@@ -47,10 +51,11 @@ class Task1():
 				vector_avgpool=self.getAvgpoolFlatten('avgpool')
 				vector_layer3=self.getLayer3Flatten('layer3')
 
+				writerID.writerow([i,row])
 				writerVL.writerow(vector_last.detach().numpy())
 				writerVA.writerow(vector_avgpool.detach().numpy())
 				writerV3.writerow(vector_layer3.detach().numpy())
-
+				row+=1
 		print("Finish csv data Creation")
 
 	# Extractor(imgID, dataset, model)

@@ -24,3 +24,14 @@ def getDB(ID_space):
     readerVector = csv.reader(fileVector, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
     DB = numpy.array(list(readerVector))
     return DB
+
+def getDBID():
+    file = open('Data\IDtoRow.csv', 'r')
+    reader = csv.reader(file, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
+    return numpy.array(list(reader))
+
+def getIDfromRow(row):
+    print(row)
+    IDRow = getDBID()
+    res = [t for t in IDRow if t[1]==row]
+    return int(res[0][0])
