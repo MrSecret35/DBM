@@ -1,3 +1,6 @@
+from scipy.special import softmax
+import numpy
+
 import genericFunction as GF
 import database as DBFunc
 import task2
@@ -24,7 +27,11 @@ def processing(Caltech101,ReteNeurale):
     elif ID_method == 2:
         classID = getCIDOneNN(QueryVector, Caltech101, DB)
     elif ID_method == 3:
-        classID = getCIDKNN(QueryVector, Caltech101, DB)
+        k = 20
+        classID = getCIDKNN(QueryVector, Caltech101, DB, k)
+    elif ID_method == 4:
+        k = 20
+        classID = getCIDKNN_importance(QueryVector, Caltech101, DB, k)
 
     GF.printIMG(ID_img_query,"Label ottenuta: " + Caltech101.annotation_categories[classID],Caltech101)
 
@@ -33,6 +40,7 @@ def getIDMethod():
     menu['1'] = "AVG Feature Classified"
     menu['2'] = "1_NN"
     menu['3'] = "K_NN"
+    menu['4'] = "K_NN with importance"
     options = menu.keys()
     for entry in options:
         print(entry, menu[entry])
@@ -61,8 +69,7 @@ def getCIDOneNN(imgQueryVector, dataset, DB):
     img, label= dataset[ DBFunc.getIDfromRow(simList[0][0]) ]
     return label
 
-def getCIDKNN(imgQueryVector, dataset, DB):
-    k = 20
+def getCIDKNN(imgQueryVector, dataset, DB, k):
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
 
@@ -72,7 +79,7 @@ def getCIDKNN(imgQueryVector, dataset, DB):
     for i in range(k):
         img, label = dataset[DBFunc.getIDfromRow(simList[i][0])]
         listLabel.append(label)
-        
+
     return findMajorityElement(listLabel)
 
 
@@ -88,3 +95,35 @@ def findMajorityElement(nums):
         else:
             i = i - 1
     return m
+
+def getCIDKNN_importance(imgQueryVector, dataset, DB, k):
+    simList = task2.getSimilarityVector(imgQueryVector, DB)
+    simList = sorted(simList, key=lambda tup: tup[1])
+
+    simList= simList[0:k]
+    #take only the distance
+    simListValue= [j for (i,j) in simList]
+    simListValue = softmax([i.item() for i in simListValue])
+
+    #remake the list with tuple: label, opposite of softmax distance(importance)
+    for i in range(k):
+        img, label = dataset[DBFunc.getIDfromRow(simList[i][0])]
+        simList[i] = (label,(1- simListValue[i]) )
+
+    #list whit unique label
+    simListRes = []
+    #list with the corresponding sum of importance
+    simListResValue = []
+    for pair in simList:
+        if(pair[0] not in simListRes):
+            simListRes.append(pair[0])
+            sumEq= sum([j if i==pair[0] else 0 for (i,j) in simList])
+            simListResValue.append(sumEq)
+
+
+    return simListRes[numpy.array(simListResValue).argmax()]
+
+
+
+
+
