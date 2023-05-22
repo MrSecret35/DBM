@@ -108,7 +108,7 @@ def getCIDKNN_importance(imgQueryVector, dataset, DB, k):
     #remake the list with tuple: label, opposite of softmax distance(importance)
     for i in range(k):
         img, label = dataset[DBFunc.getIDfromRow(simList[i][0])]
-        simList[i] = (label,(1- simListValue[i]) )
+        simList[i] = (label,(1 - simListValue[i]) )
 
     #list whit unique label
     simListRes = []
