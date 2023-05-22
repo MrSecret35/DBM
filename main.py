@@ -21,6 +21,7 @@ from task1 import Task1
 import task2
 import task3
 import task4
+import task5
 
 def main():
 	[caltech101, data_loader] = importCaltech.importData()
@@ -31,6 +32,7 @@ def main():
 	menu['2']="make a range query (range = 4)"
 	menu['3']="make a query on label"
 	menu['4']="Associating Label"
+	menu['5']= "PageRank"
 	menu['8']="Exit"
 	menu['9']="Test"
 	while True:
@@ -48,6 +50,8 @@ def main():
 			task3.start(caltech101, ReteNeurale)
 		elif selection == '4':
 			task4.processing(caltech101, ReteNeurale)
+		elif selection == '5':
+			task5.processing(caltech101, ReteNeurale)
 		elif selection == '8':
 			break
 		elif selection == '9':

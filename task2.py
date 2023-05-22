@@ -60,7 +60,7 @@ def distance(v1, v2):
 #   corresponding to the ID of the img and its similarity with the query img
 def getSimilarityVector(query, dataset):
     listaSim = []
-    for i in tqdm(range(len(dataset))):
+    for i in range(len(dataset)):
         d = distance(query, dataset[i])
         listaSim.append((i+1,d))
     return listaSim
