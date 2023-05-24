@@ -27,6 +27,21 @@ def getDB(ID_space):
     DB = numpy.array(list(readerVector))
     return DB
 
+def getDistanceDB(ID_Distance,ID_Space):
+    fileDistance = {}
+    if ID_Distance == 1:
+        if ID_Space == 1:
+            fileDistance = open('Distance\EuclideanDistance_Layer3.csv', 'r')
+        elif ID_Space == 2:
+            fileDistance = open('Distance\EuclideanDistance_AVGPool.csv', 'r')
+        elif ID_Space == 3:
+            fileDistance = open('Distance\EuclideanDistance_Last.csv', 'r')
+
+        readerDB = csv.reader(fileDistance, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
+        DB_distance = numpy.array(list(readerDB))
+
+        return DB_distance
+
 def getDBID():
     file = open('Data\IDtoRow.csv', 'r')
     reader = csv.reader(file, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
