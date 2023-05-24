@@ -18,6 +18,7 @@ def processing(Caltech101, ReteNeurale):
 
     for img in tqdm(DB):
         distanze=task2.getSimilarityVector(img,DB)
+        distanze= [j.item() for (i,j) in distanze]
         writerDistance.writerow(distanze)
 
 def takeIDDistance():
