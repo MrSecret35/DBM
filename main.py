@@ -29,8 +29,8 @@ def main():
 
 	menu = {}
 	menu['1']="Save CSV even data"
-	menu['2']="make a range query (range = 4)"
-	menu['21'] = "save distance on file"
+	menu['2']="make a query"
+	menu['21']="save distance on file"
 	menu['3']="make a query on label"
 	menu['4']="Associating Label"
 	menu['8']="Exit"

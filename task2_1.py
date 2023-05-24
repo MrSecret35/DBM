@@ -18,7 +18,7 @@ def processing(Caltech101, ReteNeurale):
 
     for img in tqdm(DB):
         distanze=task2.getSimilarityVector(img,DB)
-        distanze= [j.item() for (i,j) in distanze]
+        distanze= [j.detach().numpy().item() for (i,j) in distanze]
         writerDistance.writerow(distanze)
 
 def takeIDDistance():
@@ -33,10 +33,10 @@ def takeFileDistance(ID_Distance,ID_Space):
     fileDistance = {}
     if ID_Distance == 1:
         if ID_Space == 1:
-            fileDistance = open('Distance\EuclideanDistance_Layer3.csv', 'w')
+            fileDistance = open('Distance\EuclideanDistance_Layer3.csv', 'w', newline='')
         elif ID_Space == 2:
-            fileDistance = open('Distance\EuclideanDistance_AVGPool.csv', 'w')
+            fileDistance = open('Distance\EuclideanDistance_AVGPool.csv', 'w',newline='')
         elif ID_Space == 3:
-            fileDistance = open('Distance\EuclideanDistance_Last.csv', 'w')
+            fileDistance = open('Distance\EuclideanDistance_Last.csv', 'w', newline='')
 
     return fileDistance
