@@ -48,6 +48,10 @@ def getDBID():
     return numpy.array(list(reader))
 
 def getIDfromRow(row):
-    IDRow = getDBID()
-    res = [t for t in IDRow if t[1]==row]
+    id_row = getDBID()
+    res = [t for t in id_row if t[1]==row]
+    return int(res[0][0])
+
+def getIDfromRow(row,id_row):
+    res = [t for t in id_row if t[1]==row]
     return int(res[0][0])

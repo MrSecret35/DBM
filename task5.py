@@ -4,8 +4,8 @@ import database as DBFunc
 import task2
 
 def processing(Caltech101,ReteNeurale):
-    print("ciao")
-
+    Beta= 0.5
+    id_row= DBFunc.getDBID()
     # prendere DB
     ID_space = DBFunc.IDSpace()
     # prendere etichetta
@@ -17,32 +17,29 @@ def processing(Caltech101,ReteNeurale):
     # take DB
     DB = DBFunc.getDB(ID_space)
     # calcolare grafo
-    listVertici,listArchi = getGraph(DB,n)
-    print(listVertici)
-    print(listArchi[0])
+    datasetSim = DBFunc.getDistanceDB(1, ID_space)
+    listVertici,listArchi = getGraph(DB,n,datasetSim,id_row)
+
     # calcolare MT matrice transizione
-    M = getMatrix(len(DB))
-    print(M.shape)
+    #M = getMatrix(len(DB))
+    M = fillTMatrix(datasetSim, listArchi, n, Beta,id_row)
+    print(M)
     # calcolare matrice di teletrasporto
     # sommare le matrici
  
     # trovare autovettore con autovalore 1
     # prendere le m immagini più significative
 
-def getGraph(dataset, n):
+def getGraph(dataset, n, datasetSim,id_row):
     listVertici=[]
     listArchi=[]
 
-    for i in range(len(dataset)):
-        listVertici.append(DBFunc.getIDfromRow(i+1))
-
-        simList = task2.getSimilarityVector(dataset[i], dataset)
-        simList = sorted(simList, key=lambda tup: tup[1])
-        simList = simList[0:n]
-
-        for j in range(len(simList)):
-            listArchi.append( (DBFunc.getIDfromRow(i+1), DBFunc.getIDfromRow(simList[j][0]) ) )
-
+    for i in range(len(datasetSim)):
+        listVertici.append(DBFunc.getIDfromRow(i+1,id_row))
+        listSim = zip([z+1 for z in range(len(datasetSim[i]))] , datasetSim[i])
+        listSim = sorted(listSim, key=lambda tup: tup[1])
+        for j in range(n):
+            listArchi.append( (DBFunc.getIDfromRow(i+1,id_row), DBFunc.getIDfromRow(listSim[j][0],id_row) ))
     return listVertici, listArchi
 
 #crea la matrice M con liste vuote 
@@ -57,14 +54,22 @@ def getMatrix(N,empty):
 
        return M
 
-#riempie la matrice M 
-def fillMMatrix(M,N, listArchi, counter):
-    for i in range(N): 
-        for j in range(N):
-            if (i,j) in listArchi or (j,i) in listArchi:
-                  M[i][j] = counter[i]
+#crea e riempie la matrice MT
+def fillTMatrix(datasetSim, listArchi, n, Beta,id_row):
+    value = 1 / n * Beta
+    M=[]
+    for i in tqdm(range(len(datasetSim))):
+        d=[]
+        for j in range(len(datasetSim[i])):
+            ID_i = DBFunc.getIDfromRow(i+1,id_row)
+            ID_j = DBFunc.getIDfromRow(j+1,id_row)
+            if (ID_i,ID_j) in listArchi:
+                d.append(value)
             else:
-               M[i][j] = 0
+                d.append(0)
+        M.append(d)
+
+    return M
         
 
 #crea un dizionario che ha l'id dell'arco e quante volte questo compare come primo elemento della tupla 
