@@ -19,6 +19,7 @@ import importCaltech
 import database as DBFunc
 from task1 import Task1
 import task2
+import task2_1
 import task3
 import task4
 
@@ -29,6 +30,7 @@ def main():
 	menu = {}
 	menu['1']="Save CSV even data"
 	menu['2']="make a range query (range = 4)"
+	menu['21'] = "save distance on file"
 	menu['3']="make a query on label"
 	menu['4']="Associating Label"
 	menu['8']="Exit"
@@ -44,6 +46,8 @@ def main():
 			task1.processing(caltech101,ReteNeurale)
 		elif selection == '2':
 			task2.start(caltech101, ReteNeurale)
+		elif selection == '21':
+			task2_1.processing(caltech101, ReteNeurale)
 		elif selection == '3':
 			task3.start(caltech101, ReteNeurale)
 		elif selection == '4':

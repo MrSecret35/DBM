@@ -1,4 +1,5 @@
 /caltech101/
 /*.csv
 /Data/
+/Distance/
 __pycache__/
