@@ -59,7 +59,7 @@ def getGraph(dataset, n, datasetSim,id_row):
     return listVertici, listArchi
 
 #crea la matrice M con liste vuote 
-def getMatrix(N,empty):
+def getMatrix(N):
     M = []
     for _ in range(N):
         M.append([0 for _ in range(N)])
