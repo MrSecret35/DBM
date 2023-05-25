@@ -55,3 +55,7 @@ def getIDfromRow(row):
 def getIDfromRow(row,id_row):
     res = [t for t in id_row if t[1]==row]
     return int(res[0][0])
+
+def getRowfromID(id,id_row):
+    res = [t for t in id_row if t[0]==id]
+    return int(res[0][1])
