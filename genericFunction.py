@@ -43,3 +43,12 @@ def printIMG(IDImg,text,dataset):
     plt.title("IMG label: " + dataset.annotation_categories[label])
     plt.suptitle(text)
     plt.show()
+
+def printNIMG(IDImg,dataset):
+    n=len(IDImg)
+    f, axarr = plt.subplots(n)
+    for i in range(n):
+        img, label = dataset[IDImg[i]]
+        axarr[i].imshow(img)
+        axarr[i].set_title("img label: " + str(label) + " img num: " + str(i + 1))
+    plt.show()

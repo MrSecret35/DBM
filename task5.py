@@ -2,6 +2,7 @@ import numpy
 from tqdm import tqdm
 from collections import Counter
 import database as DBFunc
+import genericFunction as GF
 import task2
 import task3
 
@@ -14,6 +15,8 @@ def processing(Caltech101,ReteNeurale):
     N_etichetta = int(input("inserisci l'etichetta (tra 0 e 94): "))
     # prendere n (immagini più vicine)
     n = int(input("inserisci n (numero immagini più vicine): "))
+    # prendere m (immagini più vicine)
+    m = int(input("inserisci m (numero immagini da visualizzare): "))
 
 
     # take DB
@@ -40,10 +43,16 @@ def processing(Caltech101,ReteNeurale):
     print("Calcolo la nuova matrice di transizione Z")
     Z = getZMatrix(Beta,M,G)
 
-
     # trovare autovettore con autovalore 1
+    V = getAutovectorOf1(Z)
+    print(V)
 
     # prendere le m immagini più significative
+    m_id = takeMID(V,m)
+    m_id = [ DBFunc.getIDfromRow(x,id_row) for x in m_id]
+    print(m_id)
+    GF.printNIMG(m_id,Caltech101)
+
 
 def getGraph(dataset, n, datasetSim,id_row):
     listVertici=[]
@@ -99,6 +108,7 @@ def fillGMatrix(Caltech101, DB,Beta, N_etichetta,id_row):
     #prendere img dell'etichetta
     DBLabel = task3.getDatasetLabel(Caltech101,DB)
     imgLabel= DBLabel[N_etichetta]
+    print("numero immagini nella label: ", len(imgLabel))
     value = 1/len(imgLabel) * (1-Beta)
 
     d = []
@@ -119,5 +129,18 @@ def getOuterEdges(listArchi):
      c = Counter(el[0] for el in listArchi)
 
 def getZMatrix(Beta,M,G):
-     Z = Z = [ M[i]+G[i] for i in range(len(M))]
+     Z = [ [M[i][j]+G[i][j] for j in range(len(M[i]))] for i in range(len(M))]
      return Z
+
+def getAutovectorOf1(Z):
+    res = []
+    autovalori, autovettori = numpy.linalg.eig(Z)
+    for i in range(len(autovalori)):
+        if autovalori[i]==0:
+            res=autovettori[i]
+    return res
+
+def takeMID(V,m):
+    V = zip([z + 1 for z in range(len(V))], V)
+    V = sorted(V, key=lambda tup: tup[1], reverse=True)
+    return [ i for (i,j) in V[0:m] ]
