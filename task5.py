@@ -42,10 +42,9 @@ def processing(Caltech101,ReteNeurale):
     # sommare le matrici
     print("Calcolo la nuova matrice di transizione Z")
     Z = getZMatrix(Beta,M,G)
-
+    #print(*Z, sep="\n")
     # trovare autovettore con autovalore 1
     V = getAutovectorOf1(Z)
-    print(V)
 
     # prendere le m immagini più significative
     m_id = takeMID(V,m)
@@ -76,7 +75,7 @@ def getMatrix(N):
     return M
 
 def fillTMatrix(datasetSim, listArchi, n, Beta,id_row):
-    value = 1 / n * Beta
+    value = Beta/n
     M=getMatrix(len(datasetSim))
 
     for (i,j) in tqdm(listArchi):
@@ -109,7 +108,7 @@ def fillGMatrix(Caltech101, DB,Beta, N_etichetta,id_row):
     DBLabel = task3.getDatasetLabel(Caltech101,DB)
     imgLabel= DBLabel[N_etichetta]
     print("numero immagini nella label: ", len(imgLabel))
-    value = 1/len(imgLabel) * (1-Beta)
+    value = (1-Beta)/len(imgLabel)
 
     d = []
     for j in tqdm(range(len(DB))):
