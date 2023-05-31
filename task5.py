@@ -1,6 +1,8 @@
 import numpy
 from tqdm import tqdm
 from collections import Counter
+import math
+
 import database as DBFunc
 import genericFunction as GF
 import task2
@@ -128,15 +130,29 @@ def getOuterEdges(listArchi):
      c = Counter(el[0] for el in listArchi)
 
 def getZMatrix(Beta,M,G):
-     Z = [ [M[i][j]+G[i][j] for j in range(len(M[i]))] for i in range(len(M))]
-     return Z
+    Z = []
+
+    for i in range(len(M)):
+        d=[]
+        for j in range(len(M[i])):
+            x = M[i][j] + G[i][j]
+            d.append(x)
+        Z.append(d)
+    return Z
 
 def getAutovectorOf1(Z):
     res = []
     autovalori, autovettori = numpy.linalg.eig(Z)
+
+    indexArgMin1=0
+    argMin1= abs(1-autovalori[0])
     for i in range(len(autovalori)):
-        if autovalori[i]==0:
-            res=autovettori[i]
+        if abs(1-autovalori[i])<argMin1:
+            print(autovalori[i])
+            argMin1=abs(1-autovalori[i])
+            indexArgMin1=i
+
+    res=autovettori[:,indexArgMin1]
     return res
 
 def takeMID(V,m):
