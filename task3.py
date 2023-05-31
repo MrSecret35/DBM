@@ -8,9 +8,10 @@ def start(Caltech101, ReteNeurale):
     N_etichetta = int(input("inserisci l'etichetta (tra 0 e 94): "))
     # suddividere il DB in etichette
     ID_space = DBFunc.IDSpace()
+    id_row = DBFunc.getDBID()
 
     DB = DBFunc.getDB(ID_space)
-    dataset = getDatasetLabel(Caltech101,DB)
+    dataset = getDatasetLabel(Caltech101,DB, id_row)
 
     # calcolare il leader per ogni etichetta
     for i in dataset:
@@ -31,11 +32,12 @@ def start(Caltech101, ReteNeurale):
           "quella più simile: ",
           Caltech101.annotation_categories[int(simList[1][0]/2)])
 
-def getDatasetLabel(Caltech101,DB):
+def getDatasetLabel(Caltech101,DB,id_row):
 
     res= {}
     for i in range(len(DB)):
-        img, label = Caltech101[i*2]
+        id= DBFunc.getIDfromRow(i+1, id_row)
+        img, label = Caltech101[id]
         if label not in res.keys():
             res[label]= []
 
