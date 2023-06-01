@@ -39,7 +39,9 @@ def processing(Caltech101,ReteNeurale):
         d= []
         for j in range(len(featuresLatenti)):
             d.append( (DBFunc.getIDfromRow(j+1,id_row) , featuresLatenti[j][i]) )
+        d=sorted(d, key=lambda tup: tup[1], reverse=True)
         featuresLatentiShape.append(d)
+
 
     saveFeaturesLatenti(featuresLatentiShape,ID_space,redDimID)
 
