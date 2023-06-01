@@ -1,6 +1,9 @@
 import numpy
+import numpy as np
 from tqdm import tqdm
 from collections import Counter
+import math
+
 import database as DBFunc
 import genericFunction as GF
 import task2
@@ -42,14 +45,16 @@ def processing(Caltech101,ReteNeurale):
     # sommare le matrici
     print("Calcolo la nuova matrice di transizione Z")
     Z = getZMatrix(Beta,M,G)
-    #print(*Z, sep="\n")
+
+    print("Calcolo l'autovettore 1")
     # trovare autovettore con autovalore 1
     V = getAutovectorOf1(Z)
 
+    print("Stampo")
     # prendere le m immagini più significative
     m_id = takeMID(V,m)
     m_id = [ DBFunc.getIDfromRow(x,id_row) for x in m_id]
-    print(m_id)
+
     GF.printNIMG(m_id,Caltech101)
 
 
@@ -59,11 +64,11 @@ def getGraph(dataset, n, datasetSim,id_row):
 
     for i in tqdm(range(len(datasetSim))):
         listVertici.append(DBFunc.getIDfromRow(i+1,id_row))
-        #listSim = zip([z+1 for z in range(n+2)], datasetSim[i][0:(n+2)])
-        listSim = zip([z+1 for z in range(len(datasetSim[i]))] , datasetSim[i])
+        listSim = zip([z for z in range(len(datasetSim[i]))] , datasetSim[i])
         listSim = sorted(listSim, key=lambda tup: tup[1])
         for j in range(n):
-            listArchi.append( (DBFunc.getIDfromRow(i+1,id_row), DBFunc.getIDfromRow(listSim[j+1][0],id_row) ))
+            #listArchi.append( (DBFunc.getIDfromRow(i+1,id_row), DBFunc.getIDfromRow(listSim[j+1][0],id_row) ))
+            listArchi.append((i, listSim[j+1][0]))
     return listVertici, listArchi
 
 #crea la matrice M con liste vuote 
@@ -79,9 +84,9 @@ def fillTMatrix(datasetSim, listArchi, n, Beta,id_row):
     M=getMatrix(len(datasetSim))
 
     for (i,j) in tqdm(listArchi):
-        row_i = DBFunc.getRowfromID(i,id_row)
-        row_j = DBFunc.getRowfromID(j,id_row)
-        M[row_i-1][row_j-1]= value
+        #row_i = DBFunc.getRowfromID(i,id_row)
+        #row_j = DBFunc.getRowfromID(j,id_row)
+        M[i][j]= value
     return M
 
 #crea e riempie la matrice MT
@@ -105,20 +110,20 @@ def fillTMatrix_old(datasetSim, listArchi, n, Beta,id_row):
         
 def fillGMatrix(Caltech101, DB,Beta, N_etichetta,id_row):
     #prendere img dell'etichetta
-    DBLabel = task3.getDatasetLabel(Caltech101,DB)
+    DBLabel = task3.getDatasetLabel(Caltech101,DB,id_row)
     imgLabel= DBLabel[N_etichetta]
     print("numero immagini nella label: ", len(imgLabel))
     value = (1-Beta)/len(imgLabel)
 
     d = []
-    for j in tqdm(range(len(DB))):
+    for j in range(len(DB)):
         if any(numpy.array_equal(DB[j], x) for x in imgLabel):
             d.append(value)
         else:
             d.append(0)
 
     G = []
-    for i in tqdm(range(len(DB))):
+    for i in range(len(DB)):
         G.append(d)
 
     return G
@@ -128,15 +133,30 @@ def getOuterEdges(listArchi):
      c = Counter(el[0] for el in listArchi)
 
 def getZMatrix(Beta,M,G):
-     Z = [ [M[i][j]+G[i][j] for j in range(len(M[i]))] for i in range(len(M))]
-     return Z
+    Z = []
+
+    for i in tqdm(range(len(M))):
+        d=[]
+        for j in range(len(M[i])):
+            x = M[i][j] + G[i][j]
+            d.append(x)
+        Z.append(d)
+    return Z
 
 def getAutovectorOf1(Z):
     res = []
+    Z = numpy.matrix(Z)
+    Z = numpy.transpose(Z)
     autovalori, autovettori = numpy.linalg.eig(Z)
+
+    indexArgMin1 = 0
+    argmin= abs(autovalori[0]-1)
     for i in range(len(autovalori)):
-        if autovalori[i]==0:
-            res=autovettori[i]
+        if abs(autovalori[i]-1)<argmin:
+            argmin= abs(autovalori[i]-1)
+            indexArgMin1 = i
+
+    res=autovettori[:,indexArgMin1]
     return res
 
 def takeMID(V,m):
