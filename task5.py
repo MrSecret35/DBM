@@ -1,4 +1,5 @@
 import numpy
+import numpy as np
 from tqdm import tqdm
 from collections import Counter
 import math
@@ -53,6 +54,7 @@ def processing(Caltech101,ReteNeurale):
     # prendere le m immagini più significative
     m_id = takeMID(V,m)
     m_id = [ DBFunc.getIDfromRow(x,id_row) for x in m_id]
+
     GF.printNIMG(m_id,Caltech101)
 
 
@@ -143,12 +145,15 @@ def getZMatrix(Beta,M,G):
 
 def getAutovectorOf1(Z):
     res = []
+    Z = numpy.matrix(Z)
     Z = numpy.transpose(Z)
     autovalori, autovettori = numpy.linalg.eig(Z)
 
-    indexArgMin1=-1
+    indexArgMin1 = 0
+    argmin= abs(autovalori[0]-1)
     for i in range(len(autovalori)):
-        if autovalori[i] == 1:
+        if abs(autovalori[i]-1)<argmin:
+            argmin= abs(autovalori[i]-1)
             indexArgMin1 = i
 
     res=autovettori[:,indexArgMin1]
