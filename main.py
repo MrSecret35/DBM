@@ -24,6 +24,7 @@ import task3
 import task4
 import task5
 import task6
+import task7
 
 def main():
 	[caltech101, data_loader] = importCaltech.importData()
@@ -37,6 +38,7 @@ def main():
 	menu['4']="Associating Label"
 	menu['5']= "PageRank"
 	menu['6']="Features Latenti"
+	menu['7'] = "Features Latenti CP"
 	menu['8']="Exit"
 	menu['9']="Test"
 	while True:
@@ -60,6 +62,8 @@ def main():
 			task5.processing(caltech101, ReteNeurale)
 		elif selection == '6':
 			task6.processing(caltech101, ReteNeurale)
+		elif selection == '7':
+			task7.processing(caltech101, ReteNeurale)
 		elif selection == '8':
 			break
 		elif selection == '9':

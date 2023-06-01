@@ -6,9 +6,6 @@ from NeuralNetwork import *
 import genericFunction as GF
 from tqdm import tqdm
 
-#from tensorly.decomposition import parafac
-#dec = parafac(vector_last.unsqueeze(-1).detach().numpy(),rank=3)
-
 class Task1():
 	def __init__(self) -> None:
 		pass
