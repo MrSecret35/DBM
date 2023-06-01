@@ -14,13 +14,14 @@ def start(Caltech101, ReteNeurale):
     dataset = getDatasetLabel(Caltech101,DB, id_row)
 
     # calcolare il leader per ogni etichetta
+    res=[]
     for i in dataset:
         vectorLeader = dataset[i][0]
         for img in dataset[i]:
             vectorLeader += img
             vectorLeader = [x/2 for x in vectorLeader]
-        dataset[i]= vectorLeader
-
+        res.append(vectorLeader)
+    dataset=res
     # calcolare i più simili alla nostra etichetta
     simList = task2.getSimilarityVector(dataset[N_etichetta],dataset)
     simList = sorted(simList, key=lambda tup: tup[1])

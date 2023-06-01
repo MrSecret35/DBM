@@ -43,7 +43,7 @@ def processing(Caltech101,ReteNeurale):
         featuresLatentiShape.append(d)
 
 
-    saveFeaturesLatenti(featuresLatentiShape,ID_space,redDimID)
+    GF.saveFeaturesLatenti("featuresKTask6",featuresLatentiShape,ID_space,redDimID)
 
 
 def getRedDim():
@@ -90,27 +90,3 @@ def get_KMeans(DB,k):
 
     return res
 
-def saveFeaturesLatenti(featuresLatenti,ID_space,redDimID):
-    name = "featuresK"
-    if ID_space == 1:
-        name+="_Layer3_"
-    elif ID_space == 2:
-        name+="_AVGPool_"
-    elif ID_space == 3:
-        name+="_VectorLast_"
-
-    if redDimID == 1:
-        name+="_PCA"
-    elif redDimID == 2:
-        name+="_SVD"
-    elif redDimID == 3:
-        name += "_LDA"
-    elif redDimID == 4:
-        name += "_KMeans"
-
-    print("salvataggio su File")
-    file = open('LatentFeatures\\' + name + '.csv', 'w', newline='')
-    writer = csv.writer(file, delimiter=';')
-
-    for row in featuresLatenti:
-        writer.writerow(row)
