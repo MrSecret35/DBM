@@ -57,11 +57,11 @@ def printNIMG(IDImg,dataset):
 def saveOnFileLatentFeatures(name,featuresLatenti,ID_space,redDimID):
     name = name
     if ID_space == 1:
-        name+="_Layer3_"
+        name+="_Layer3"
     elif ID_space == 2:
-        name+="_AVGPool_"
+        name+="_AVGPool"
     elif ID_space == 3:
-        name+="_VectorLast_"
+        name+="_VectorLast"
 
     if redDimID == 1:
         name+="_PCA"

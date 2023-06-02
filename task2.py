@@ -15,6 +15,7 @@ def start(Caltech101, ReteNeurale):
 
     #ask what image
     ID_img_query= GF.getIDImg(Caltech101)
+    id_row = DBFunc.getDBID()
 
     # ask N image to print
     n = int(input("insert n (numero immagini):"))
@@ -33,7 +34,7 @@ def start(Caltech101, ReteNeurale):
     listaSim=sorted(listaSim, key=lambda tup: tup[1])
 
     img_query, label_query = Caltech101[ID_img_query]
-    printNImage(img_query, listaSim, n, Caltech101)
+    printNImage(img_query, listaSim, n, Caltech101,id_row)
 
 
 # distance(v1, v2)
@@ -71,12 +72,12 @@ def getSimilarityVector(query, dataset):
 # n:        number of img to print in the second line
 # dataset:  dataset to get the img from id
 # prints 2 lines, the first containing img and the second containing the first n img of the list
-def printNImage(img, list, n, dataset):
+def printNImage(img, list, n, dataset,id_row):
     f, axarr = plt.subplots(2, n)
     axarr[0][0].imshow(img)
     axarr[0][0].set_title("immagine scelta")
     for i in range(n):
-        imgRes, labelRes = dataset[ DBFunc.getIDfromRow(list[i][0])]
+        imgRes, labelRes = dataset[ DBFunc.getIDfromRow(list[i][0],id_row)]
         axarr[1][i].imshow(imgRes)
         axarr[1][i].set_title("img num: " + str(i+1))
     plt.show()

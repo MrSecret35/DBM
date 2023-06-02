@@ -7,7 +7,6 @@ from tensorly.decomposition import parafac
 
 import genericFunction as GF
 import database as DBFunc
-import task6
 #
 
 
@@ -24,8 +23,19 @@ def processing(Caltech101,ReteNeurale):
     DB_tensor=tl.tensor(DB)
 
     (weights, factors)= parafac(DB_tensor,rank=k)
-
-    featuresLatentiShape = task6.shapeLatentFeatures(factors[0], k, id_row)
+    featuresLatentiShape = shapeLatentFeatures(factors[0], k, id_row,Caltech101)
 
     GF.saveOnFileLatentFeatures("featuresKTask7", featuresLatentiShape, ID_space, 5)
 
+def shapeLatentFeatures(featuresLatenti,k,id_row,Caltech101):
+    featuresLatentiShape = []
+    for i in tqdm(range(k)):
+        d = []
+        for j in range(len(featuresLatenti)):
+            id=DBFunc.getIDfromRow(j+1,id_row)
+            img,label = Caltech101[id]
+            d.append((label, featuresLatenti[j][i]))
+        d = sorted(d, key=lambda tup: tup[1], reverse=True)
+        featuresLatentiShape.append(d)
+
+    return featuresLatentiShape
