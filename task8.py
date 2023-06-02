@@ -32,13 +32,7 @@ def processing(Caltech101,ReteNeurale):
     elif redDimID == 4:
         featuresLatenti = task6.get_KMeans(DB, k)
 
-    featuresLatentiShape = []
-    for i in tqdm(range(k)):
-        d = []
-        for j in range(len(featuresLatenti)):
-            d.append((j, featuresLatenti[j][i]))
-        d = sorted(d, key=lambda tup: tup[1], reverse=True)
-        featuresLatentiShape.append(d)
+    featuresLatentiShape = task6.shapeLatentFeatures(featuresLatenti, k, id_row)
 
     GF.saveOnFileLatentFeatures("featuresKTask8",featuresLatentiShape,ID_space,redDimID)
 

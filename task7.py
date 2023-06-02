@@ -25,13 +25,7 @@ def processing(Caltech101,ReteNeurale):
 
     (weights, factors)= parafac(DB_tensor,rank=k)
 
-    featuresLatentiShape = []
-    for i in tqdm(range(k)):
-        d = []
-        for j in range(len(factors[0])):
-            d.append((j, factors[0][j][i]))
-        d = sorted(d, key=lambda tup: tup[1], reverse=True)
-        featuresLatentiShape.append(d)
+    featuresLatentiShape = task6.shapeLatentFeatures(factors[0], k, id_row)
 
     GF.saveOnFileLatentFeatures("featuresKTask7", featuresLatentiShape, ID_space, 5)
 
