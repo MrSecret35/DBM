@@ -34,16 +34,10 @@ def processing(Caltech101,ReteNeurale):
         featuresLatenti = get_KMeans(DB,k)
 
     #re shape featuresLatenti come lista di feature, ogni feature è una lista di coppie (ID obj, valore)
-    featuresLatentiShape = []
-    for i in tqdm(range(k)):
-        d= []
-        for j in range(len(featuresLatenti)):
-            d.append( (DBFunc.getIDfromRow(j+1,id_row) , featuresLatenti[j][i]) )
-        d=sorted(d, key=lambda tup: tup[1], reverse=True)
-        featuresLatentiShape.append(d)
+    featuresLatentiShape= shapeLatentFeatures(featuresLatenti,k,id_row)
 
 
-    GF.saveFeaturesLatenti("featuresKTask6",featuresLatentiShape,ID_space,redDimID)
+    GF.saveOnFileLatentFeatures("featuresKTask6",featuresLatentiShape,ID_space,redDimID)
 
 
 def getRedDim():
@@ -89,4 +83,15 @@ def get_KMeans(DB,k):
     res = kmeans.transform(DB)
 
     return res
+
+def shapeLatentFeatures(featuresLatenti,k,id_row):
+    featuresLatentiShape = []
+    for i in tqdm(range(k)):
+        d = []
+        for j in range(len(featuresLatenti)):
+            d.append((DBFunc.getIDfromRow(j + 1, id_row), featuresLatenti[j][i]))
+        d = sorted(d, key=lambda tup: tup[1], reverse=True)
+        featuresLatentiShape.append(d)
+
+    return featuresLatentiShape
 
