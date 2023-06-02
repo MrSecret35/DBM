@@ -71,6 +71,8 @@ def saveOnFileLatentFeatures(name,featuresLatenti,ID_space,redDimID):
         name += "_LDA"
     elif redDimID == 4:
         name += "_KMeans"
+    elif redDimID == 5:
+        name += "_CP"
 
     print("salvataggio su File")
     file = open('LatentFeatures\\' + name + '.csv', 'w', newline='')
