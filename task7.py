@@ -2,10 +2,11 @@ import torch
 import numpy as np
 import csv
 from tqdm import tqdm
+import tensorly as tl
 from tensorly.decomposition import parafac
 
 import database as DBFunc
-
+import task6
 #
 
 
@@ -19,11 +20,9 @@ def processing(Caltech101,ReteNeurale):
 
     # take DB
     DB = DBFunc.getDB(ID_space)
-    #DB_tensor = torch.tensor(DB)
-    DB_tensor= np.array([ np.array([ np.array([DB[i][j]],dtype='uint8') for j in range(len(DB[i]))]) for i in range(len(DB))])
+    DB_tensor=tl.tensor(DB)
 
-    #dec = parafac(vector_last.unsqueeze(-1).detach().numpy(), rank=3)
-    (weights, factors)= parafac(DB,rank=4)
+    (weights, factors)= parafac(DB_tensor,rank=k)
 
-    print(weights)
-    print(factors)
+    task6.
+
