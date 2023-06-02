@@ -15,6 +15,7 @@ from torchvision.models import resnet50, ResNet50_Weights
 from NeuralNetwork import ReteNeurale, features
 import genericFunction as GF
 import importCaltech
+import tensorly as tl
 
 import database as DBFunc
 from task1 import Task1
@@ -27,6 +28,7 @@ import task6
 import task7
 import task8
 import task9
+import task10
 
 def main():
 	[caltech101, data_loader] = importCaltech.importData()
@@ -43,6 +45,7 @@ def main():
 	menu['7'] = "Features Latenti CP"
 	menu['8']="Features Latenti label-Label"
 	menu['9']="Features Latenti top K"
+	menu['10']="make a query LatentFeatures"
 	menu['13']="Exit"
 	menu['14']="Test"
 	while True:
@@ -72,14 +75,13 @@ def main():
 			task8.processing(caltech101, ReteNeurale)
 		elif selection == '9':
 			task9.processing(caltech101, ReteNeurale)
+		elif selection == '10':
+			task10.processing(caltech101, ReteNeurale)
 		elif selection == '13':
 			break
-		elif selection == '9':
-			DB= DBFunc.getDB(3)
-			origin = np.array([[0, 0, 0], [0, 0, 0]])  # origin point
-
-			plt.quiver(DB[0],DB[1],DB[2])
-			plt.show()
+		elif selection == '14':
+			x = tl.tensor(np.arange(24).reshape((3, 4, 2)))
+			print(x)
 		else:
 			print("Unknown Option Selected!")
 
