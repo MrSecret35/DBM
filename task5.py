@@ -49,8 +49,8 @@ def processing(Caltech101,ReteNeurale):
     print("Calcolo l'autovettore 1")
     # trovare autovettore con autovalore 1
     V = getAutovectorOf1(Z)
-
     print("Stampo")
+
     # prendere le m immagini più significative
     m_id = takeMID(V,m)
     m_id = [ DBFunc.getIDfromRow(x,id_row) for x in m_id]
@@ -145,18 +145,15 @@ def getZMatrix(Beta,M,G):
 
 def getAutovectorOf1(Z):
     res = []
-    Z = numpy.matrix(Z)
-    Z = numpy.transpose(Z)
-    autovalori, autovettori = numpy.linalg.eig(Z)
+    Z= numpy.array(Z)
+    eigenvalues, eigenvectors = numpy.linalg.eig(Z.T)
 
-    indexArgMin1 = 0
-    argmin= abs(autovalori[0]-1)
-    for i in range(len(autovalori)):
-        if abs(autovalori[i]-1)<argmin:
-            argmin= abs(autovalori[i]-1)
-            indexArgMin1 = i
+    indexArgMin1 = np.argmax(eigenvalues)
 
-    res=autovettori[:,indexArgMin1]
+    res=eigenvectors[:,indexArgMin1]
+    res = res.real
+    res = res / res.sum()
+
     return res
 
 def takeMID(V,m):
