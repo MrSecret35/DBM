@@ -3,23 +3,25 @@ from tqdm import tqdm
 
 import database as DBFunc
 import task2
-def processing(Caltech101, ReteNeurale):
+def processing(dataset, ReteNeurale):
 
     # ask ID spase
     ID_Space = DBFunc.IDSpace()
+
     # take DB: matrix corresponding to the csv file indicated by the ID_space
     DB = DBFunc.getDB(ID_Space)
 
-    ID_Distance= takeIDDistance()
+    #ID od what distance use
+    ID_Distance = takeIDDistance()
 
-    fileDistance= takeFileDistance(ID_Distance,ID_Space)
+    fileDistance = takeFileDistance(ID_Distance,ID_Space)
     writerDistance = csv.writer(fileDistance, delimiter=';')
 
-
     for img in tqdm(DB):
-        distanze=task2.getSimilarityVector(img,DB)
-        distanze= [j.detach().numpy().item() for (i,j) in distanze]
+        distanze = task2.getSimilarityVector(img,DB)
+        distanze = [j.detach().numpy().item() for (i,j) in distanze]
         writerDistance.writerow(distanze)
+
 
 def takeIDDistance():
     ID_Distance = ''
@@ -28,6 +30,7 @@ def takeIDDistance():
         if (ID_Distance != '1'):
             print("insert a valid selection")
     return int(ID_Distance)
+
 
 def takeFileDistance(ID_Distance,ID_Space):
     fileDistance = {}

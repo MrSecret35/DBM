@@ -110,7 +110,7 @@ def fillTMatrix_old(datasetSim, listArchi, n, Beta,id_row):
         
 def fillGMatrix(Caltech101, DB,Beta, N_etichetta,id_row):
     #prendere img dell'etichetta
-    DBLabel = task3.getDatasetLabel(Caltech101,DB,id_row)
+    DBLabel = task3.getDictDatasetLabel(Caltech101,DB,id_row)
     imgLabel= DBLabel[N_etichetta]
     print("numero immagini nella label: ", len(imgLabel))
     value = (1-Beta)/len(imgLabel)

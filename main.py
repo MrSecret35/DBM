@@ -33,18 +33,18 @@ def main():
 	print('\n')
 
 	menu = {}
-	menu['1']="Save CSV even data"
-	menu['2']="make a query"
-	menu['21']="save distance on file"
-	menu['3']="make a query on label"
-	menu['4']="Associating Label"
-	menu['5']= "PageRank"
-	menu['6']="Features Latenti"
+	menu['1'] = "Save CSV even data"
+	menu['2'] = "make a query"
+	menu['21']= "save distance on file"
+	menu['3'] = "make a query on label"
+	menu['4'] = "Associating Label"
+	menu['5'] = "PageRank"
+	menu['6'] = "Features Latenti"
 	menu['7'] = "Features Latenti CP"
-	menu['8']="Features Latenti label-Label"
-	menu['9']="Features Latenti top K"
-	menu['13']="Exit"
-	menu['14']="Test"
+	menu['8'] = "Features Latenti label-Label"
+	menu['9'] = "Features Latenti top K"
+	menu['13']= "Exit"
+	menu['14']= "Test"
 	while True:
 		options=menu.keys()
 		for entry in options:
@@ -55,11 +55,11 @@ def main():
 			task1 = Task1()
 			task1.processing(caltech101,ReteNeurale)
 		elif selection == '2':
-			task2.start(caltech101, ReteNeurale)
+			task2.processing(caltech101, ReteNeurale)
 		elif selection == '21':
 			task2_1.processing(caltech101, ReteNeurale)
 		elif selection == '3':
-			task3.start(caltech101, ReteNeurale)
+			task3.processing(caltech101, ReteNeurale)
 		elif selection == '4':
 			task4.processing(caltech101, ReteNeurale)
 		elif selection == '5':

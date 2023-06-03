@@ -14,21 +14,7 @@ import csv
 from torchvision.io import read_image, ImageReadMode
 from torchvision.models import resnet50, ResNet50_Weights
 
-# prepare the function to preprocess images to be compatible with ResNet50
-default_weights = ResNet50_Weights.DEFAULT
-preprocess = default_weights.transforms()
 
-def get_features(name,features):
-    def hook(model, input, output):
-        features[name] = output.detach()
-    return hook
-
-def IMGtoTensor(img):
-  if torchvision.transforms.functional.get_image_num_channels(img) != 1:
-    proc_img = preprocess(img).unsqueeze(0)
-    return proc_img
-  else:
-    print ("incompatiable image format -- try another one")
 
 def getIDImg(Caltech101):
     ID_img_query = -1
@@ -45,13 +31,36 @@ def printIMG(IDImg,text,dataset):
     plt.suptitle(text)
     plt.show()
 
-def printNIMG(IDImg,dataset):
-    n=len(IDImg)
+# printNImageCompare(img, lista, n, dataset)
+# IDImgs:   list of IDs of img to print
+# dataset:  dataset to get the img from id
+#
+# prints N image in 1 column, print img number(position) and label for each image
+def printNIMG(IDImgs,dataset):
+    n=len(IDImgs)
     f, axarr = plt.subplots(n)
     for i in range(n):
-        img, label = dataset[IDImg[i]]
+        img, label = dataset[IDImgs[i]]
         axarr[i].imshow(img)
         axarr[i].set_title("img label: " + str(label) + " img num: " + str(i + 1))
+    plt.show()
+
+# printNImageCompare(img, lista, n, dataset)
+# IDImg:    ID image to be printed in the first row
+# IDImgs:   list of IDs of img for the second row
+# dataset:  dataset to get the img from id
+#
+# prints 2 lines, the first containing img and the second containing the first n img of the list
+def printNImageCompare(IDImg, IDImgs, dataset):
+    f, axarr = plt.subplots(2, len(IDImgs))
+
+    img_query, label_query = dataset[IDImg]
+    axarr[0][0].imshow(img_query)
+    axarr[0][0].set_title("immagine scelta")
+    for i in range(len(IDImgs)):
+        imgRes, labelRes = dataset[IDImgs[i]]
+        axarr[1][i].imshow(imgRes)
+        axarr[1][i].set_title("img num: " + str(i+1))
     plt.show()
 
 def saveOnFileLatentFeatures(name,featuresLatenti,ID_space,redDimID):

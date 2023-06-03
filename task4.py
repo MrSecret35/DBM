@@ -3,26 +3,27 @@ import numpy
 
 import genericFunction as GF
 import database as DBFunc
+from task1 import Task1
 import task2
 import task3
-from task1 import Task1
+
 def processing(Caltech101,ReteNeurale):
     task1 = Task1()
 
-    # prendere DB
+    # take DB:
     ID_space=DBFunc.IDSpace()
     DB = DBFunc.getDB(ID_space)
     id_row = DBFunc.getDBID()
 
-    # chiedere l'immagine di query
+    # take IMG for the query
     ID_img_query = GF.getIDImg(Caltech101)
     QueryVector = task1.getVectorbyID(ID_img_query, Caltech101, ReteNeurale, ID_space)
 
-    #chidere che metodo utilizzare
+    # take ID of method
     ID_method = getIDMethod()
 
-    #calcolare la classe
-    classID = -1;
+    # calculates the class corresponding to the query image
+    classID = -1
     if ID_method == 1:
         classID= getCIDAVG(QueryVector ,Caltech101, DB, id_row)
     elif ID_method == 2:
@@ -34,8 +35,12 @@ def processing(Caltech101,ReteNeurale):
         k = 20
         classID = getCIDKNN_importance(QueryVector, Caltech101, DB, id_row, k)
 
+    # print results
     GF.printIMG(ID_img_query,"Label ottenuta: " + Caltech101.annotation_categories[classID],Caltech101)
 
+# getIDMethod()
+#
+# ask and return an ID for method
 def getIDMethod():
     menu = {}
     menu['1'] = "AVG Feature Classified"
@@ -48,21 +53,31 @@ def getIDMethod():
     res= int(input("insert choice: "))
     return res
 
+# getCIDAVG(imgQueryVector, dataset, DB, id_row)
+# imgQueryVector: feature vector for the query image
+# dataset: dataset of images
+# DB: matrix Image-Features DB[i][j]= value for feature j in img i
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# calculates the class corresponding to the query image with similarity in Label-Feature DB
+# return ID of Class/Label
 def getCIDAVG(imgQueryVector, dataset, DB, id_row):
-    DBLabelAVG = task3.getDatasetLabel(dataset, DB, id_row)
-    res=[]
-    for i in DBLabelAVG:
-        vectorLeader = DBLabelAVG[i][0]
-        for img in DBLabelAVG[i]:
-            vectorLeader += img
-            vectorLeader = [x / 2 for x in vectorLeader]
-        res.append(vectorLeader)
-    DBLabelAVG= res
+    DictDBLabelAVG = task3.getDictDatasetLabel(dataset, DB, id_row)
+    DBLabelAVG = task3.shapeDBLabel(DictDBLabelAVG)
+
     simList = task2.getSimilarityVector(imgQueryVector, DBLabelAVG)
     simList = sorted(simList, key=lambda tup: tup[1])
 
     return int(simList[0][0]-1)
 
+# getCIDAVG(imgQueryVector, dataset, DB, id_row)
+# imgQueryVector: feature vector for the query image
+# dataset: dataset of images
+# DB: matrix Image-Features DB[i][j]= value for feature j in img i
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# calculates the class corresponding to the query image associating the class of the closest img in the DB
+# return ID of Class/Label
 def getCIDOneNN(imgQueryVector, dataset, DB,id_row):
 
     simList = task2.getSimilarityVector(imgQueryVector, DB)
@@ -71,6 +86,15 @@ def getCIDOneNN(imgQueryVector, dataset, DB,id_row):
     img, label= dataset[ DBFunc.getIDfromRow(simList[0][0],id_row) ]
     return label
 
+# getCIDAVG(imgQueryVector, dataset, DB, id_row)
+# imgQueryVector: feature vector for the query image
+# dataset: dataset of images
+# DB: matrix Image-Features DB[i][j]= value for feature j in img i
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+# k: range of images
+#
+# calculates the class corresponding to the query image associating the most common class (majority) in a range k
+# return ID of Class/Label
 def getCIDKNN(imgQueryVector, dataset, DB, id_row, k):
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
@@ -85,6 +109,10 @@ def getCIDKNN(imgQueryVector, dataset, DB, id_row, k):
     return findMajorityElement(listLabel)
 
 
+# findMajorityElement(nums)
+# nums: vector of number
+#
+# return/find the element with the most appearances in the vector
 def findMajorityElement(nums):
     m = -1
     i = 0
@@ -98,6 +126,15 @@ def findMajorityElement(nums):
             i = i - 1
     return m
 
+# getCIDAVG(imgQueryVector, dataset, DB, id_row)
+# imgQueryVector: feature vector for the query image
+# dataset: dataset of images
+# DB: matrix Image-Features DB[i][j]= value for feature j in img i
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+# k: range of images
+#
+# calculates the class corresponding to the query image associating the most voted class (importance/proximity) in a range k
+# return ID of Class/Label
 def getCIDKNN_importance(imgQueryVector, dataset, DB, id_row, k):
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
