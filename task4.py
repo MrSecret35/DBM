@@ -12,6 +12,7 @@ def processing(Caltech101,ReteNeurale):
     # prendere DB
     ID_space=DBFunc.IDSpace()
     DB = DBFunc.getDB(ID_space)
+    id_row = DBFunc.getDBID()
 
     # chiedere l'immagine di query
     ID_img_query = GF.getIDImg(Caltech101)
@@ -23,15 +24,15 @@ def processing(Caltech101,ReteNeurale):
     #calcolare la classe
     classID = -1;
     if ID_method == 1:
-        classID= getCIDAVG(QueryVector ,Caltech101, DB)
+        classID= getCIDAVG(QueryVector ,Caltech101, DB, id_row)
     elif ID_method == 2:
-        classID = getCIDOneNN(QueryVector, Caltech101, DB)
+        classID = getCIDOneNN(QueryVector, Caltech101, DB, id_row)
     elif ID_method == 3:
         k = 20
-        classID = getCIDKNN(QueryVector, Caltech101, DB, k)
+        classID = getCIDKNN(QueryVector, Caltech101, DB, id_row, k)
     elif ID_method == 4:
         k = 20
-        classID = getCIDKNN_importance(QueryVector, Caltech101, DB, k)
+        classID = getCIDKNN_importance(QueryVector, Caltech101, DB, id_row, k)
 
     GF.printIMG(ID_img_query,"Label ottenuta: " + Caltech101.annotation_categories[classID],Caltech101)
 
@@ -44,40 +45,41 @@ def getIDMethod():
     options = menu.keys()
     for entry in options:
         print(entry, menu[entry])
-    res= int(input("insert choice"))
+    res= int(input("insert choice: "))
     return res
 
-def getCIDAVG(imgQueryVector, dataset, DB):
-    DBLabelAVG = task3.getDatasetLabel(dataset, DB)
+def getCIDAVG(imgQueryVector, dataset, DB, id_row):
+    DBLabelAVG = task3.getDatasetLabel(dataset, DB, id_row)
+    res=[]
     for i in DBLabelAVG:
         vectorLeader = DBLabelAVG[i][0]
         for img in DBLabelAVG[i]:
             vectorLeader += img
             vectorLeader = [x / 2 for x in vectorLeader]
-        DBLabelAVG[i] = vectorLeader
-
+        res.append(vectorLeader)
+    DBLabelAVG= res
     simList = task2.getSimilarityVector(imgQueryVector, DBLabelAVG)
     simList = sorted(simList, key=lambda tup: tup[1])
 
     return int(simList[0][0]-1)
 
-def getCIDOneNN(imgQueryVector, dataset, DB):
+def getCIDOneNN(imgQueryVector, dataset, DB,id_row):
 
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
 
-    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0]) ]
+    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0],id_row) ]
     return label
 
-def getCIDKNN(imgQueryVector, dataset, DB, k):
+def getCIDKNN(imgQueryVector, dataset, DB, id_row, k):
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
 
 
-    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0]) ]
+    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0],id_row) ]
     listLabel= []
     for i in range(k):
-        img, label = dataset[DBFunc.getIDfromRow(simList[i][0])]
+        img, label = dataset[DBFunc.getIDfromRow(simList[i][0],id_row)]
         listLabel.append(label)
 
     return findMajorityElement(listLabel)
@@ -96,7 +98,7 @@ def findMajorityElement(nums):
             i = i - 1
     return m
 
-def getCIDKNN_importance(imgQueryVector, dataset, DB, k):
+def getCIDKNN_importance(imgQueryVector, dataset, DB, id_row, k):
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
 
@@ -107,7 +109,7 @@ def getCIDKNN_importance(imgQueryVector, dataset, DB, k):
 
     #remake the list with tuple: label, opposite of softmax distance(importance)
     for i in range(k):
-        img, label = dataset[DBFunc.getIDfromRow(simList[i][0])]
+        img, label = dataset[DBFunc.getIDfromRow(simList[i][0], id_row)]
         simList[i] = (label,(1 - simListValue[i]) )
 
     #list whit unique label
