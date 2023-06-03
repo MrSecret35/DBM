@@ -9,20 +9,19 @@ import task3
 import task6
 
 def processing(Caltech101,ReteNeurale):
-    # prendere DB
+    # take DB
     ID_space = DBFunc.IDSpace()
+    DB = DBFunc.getDB(ID_space)
     id_row = DBFunc.getDBID()
+    DBDistance = DBFunc.getDistanceDB(1, ID_space)
 
-    # prendere k (features latenti)
+    # take k (latent features)
     k = int(input("inserisci k (features latenti): "))
 
-    # prendere tecnica
+    # take id of method
     redDimID = task6.getRedDim()
 
-    # take DB
-    DB = DBFunc.getDB(ID_space)
-    DBDistance = DBFunc.getDistanceDB(1,ID_space)
-
+    # featuresLatenti = list of obj, for each obj it has a list with the k values for the k latent features
     featuresLatenti = None
     if redDimID == 1:
         featuresLatenti = task6.get_PCA(DBDistance,k)
@@ -33,28 +32,9 @@ def processing(Caltech101,ReteNeurale):
     elif redDimID == 4:
         featuresLatenti = task6.get_KMeans(DBDistance, k)
 
-
+    # reshape featuresLatenti come as a list of features, each feature is a list of pairs (id obj, value)
     featuresLatentiShape = task6.shapeLatentFeatures(featuresLatenti, k, id_row)
 
+    # save latent features on file
     GF.saveOnFileLatentFeatures("featuresKTask9", featuresLatentiShape, ID_space, redDimID)
-
-def get_PCA(DB,k):
-    pca = PCA()
-    pca.fit(DB)
-    resPCA= pca.transform(DB)
-
-    eigthValue = pca.explained_variance_ratio_
-    eigthValue = zip([z for z in range(len(eigthValue))], eigthValue)
-    eigthValue = sorted(eigthValue, key=lambda tup: tup[1], reverse=True)
-    eigthValue = eigthValue[0:k]
-    eigthValue = [i for (i,j) in eigthValue]
-
-    res=[]
-    for x in resPCA:
-        d= []
-        for i in range(len(eigthValue)):
-            d.append(x[i])
-        res.append(d)
-
-    return res
 

@@ -33,7 +33,7 @@ def processing(dataset, ReteNeurale):
 # DB: matrix Image-Features DB[i][j]= value for feature j in img i
 # id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
 #
-# returns a dictionary with: for each label all the corresponding images
+# returns a dictionary taht for each label all the corresponding images
 def getDictDatasetLabel(dataset,DB,id_row):
     res= {}
     for i in range(len(DB)):

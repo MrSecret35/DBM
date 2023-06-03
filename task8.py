@@ -5,23 +5,23 @@ import genericFunction as GF
 import task2
 import task3
 import task6
-def processing(Caltech101,ReteNeurale):
-    # prendere DB
-    ID_space = DBFunc.IDSpace()
-    id_row = DBFunc.getDBID()
-
-    # prendere k (features latenti)
-    k = int(input("inserisci k (features latenti): "))
-
-    # prendere tecnica
-    redDimID = task6.getRedDim()
+def processing(dataset,ReteNeurale):
 
     # take DB
+    ID_space = DBFunc.IDSpace()
+    id_row = DBFunc.getDBID()
     DB = DBFunc.getDB(ID_space)
 
-    DBLabelDistance = createDBLabelLabel(Caltech101, DB, id_row)
+    # take k (latent features)
+    k = int(input("inserisci k (features latenti): "))
 
-    # featuresLatenti = lista di obj, per ogni obj ha una lista con i k valori per le k feature latenti
+    # take id of method
+    redDimID = task6.getRedDim()
+
+    # take DB Label-Label
+    DBLabelDistance = createDBLabelLabel(dataset, DB, id_row)
+
+    # featuresLatenti = list of obj, for each obj it has a list with the k values for the k latent features
     featuresLatenti = None
     if redDimID == 1:
         featuresLatenti = task6.get_PCA(DBLabelDistance, k)
@@ -32,25 +32,43 @@ def processing(Caltech101,ReteNeurale):
     elif redDimID == 4:
         featuresLatenti = task6.get_KMeans(DBLabelDistance, k)
 
+    # reshape featuresLatenti come as a list of features, each feature is a list of pairs (id Label, value)
     featuresLatentiShape = shapeLatentFeatures(featuresLatenti, k, id_row)
 
+    # save latent features on file
     GF.saveOnFileLatentFeatures("featuresKTask8",featuresLatentiShape,ID_space,redDimID)
 
-def createDBLabelLabel(Caltech101, DB, id_row):
-    DictDBLabel = task3.getDictDatasetLabel(Caltech101, DB, id_row)
+# createDBLabelLabel(dataset, DB, id_row)
+# dataset: dataset of images
+# DB: matrix Image-Features DB[i][j]= value for feature j in img i
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# return/create DB(matrix) Label-Label
+def createDBLabelLabel(dataset, DB, id_row):
+    DictDBLabel = task3.getDictDatasetLabel(dataset, DB, id_row)
     DBLabel = task3.shapeDBLabel(DictDBLabel)
     DBLabelDistance = calculateLabelDistanceDB(DBLabel)
 
     return DBLabelDistance
 
+# calculateLabelDistanceDB(dataset)
+# dataset: matrix Label-Features
+#
+# calculate for each label the distance from all the other labels
 def calculateLabelDistanceDB(dataset):
     res= []
     for label in tqdm(dataset):
-        distanze= task2.getSimilarityVector(label,dataset)
-        distanze= [j.detach().numpy().item() for (i,j) in distanze]
+        distanze = task2.getSimilarityVector(label,dataset)
+        distanze = [j.detach().numpy().item() for (i,j) in distanze]
         res.append(distanze)
     return res
 
+# shapeLatentFeatures(featuresLatenti,k,id_row)
+# featuresLatenti: list of obj, for each obj it has a list with the k values for the k latent features
+# k: number of latent features
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# reshape featuresLatenti come as a list of features, each feature is a list of pairs (id Label, value), each feature is sorted in descending order
 def shapeLatentFeatures(featuresLatenti,k,id_row):
     featuresLatentiShape = []
     for i in tqdm(range(k)):

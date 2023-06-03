@@ -1,63 +1,70 @@
 import numpy
-import numpy as np
 from tqdm import tqdm
 from collections import Counter
-import math
 
 import database as DBFunc
 import genericFunction as GF
 import task2
 import task3
 
-def processing(Caltech101,ReteNeurale):
+def processing(dataset,ReteNeurale):
     Beta= 0.5
     id_row= DBFunc.getDBID()
-    # prendere DB
-    ID_space = DBFunc.IDSpace()
-    # prendere etichetta
-    N_etichetta = int(input("inserisci l'etichetta (tra 0 e 94): "))
-    # prendere n (immagini più vicine)
-    n = int(input("inserisci n (numero immagini più vicine): "))
-    # prendere m (immagini più vicine)
-    m = int(input("inserisci m (numero immagini da visualizzare): "))
-
 
     # take DB
+    ID_space = DBFunc.IDSpace()
     DB = DBFunc.getDB(ID_space)
-    # calcolare grafo
     datasetSim = DBFunc.getDistanceDB(1, ID_space)
 
-    print("Prendo la lista Vertici e la lista Archi")
-    listVertici,listArchi = getGraph(DB,n,datasetSim,id_row)
+    # take ID label
+    N_etichetta = int(input("inserisci l'etichetta (tra 0 e 94): "))
 
-    # calcolare MT matrice transizione
-    # per ottenere un id getIDfromRow( riga+1 )
+    # take 'n' range for graph
+    n = int(input("inserisci n (numero immagini più vicine): "))
+
+    # take number of images to print
+    m = int(input("insert n (numero immagini da stampare):"))
+
+
+    # calculate the graph
+    print("Prendo la lista Vertici e la lista Archi")
+    listVertici,listArchi = getGraph(DB,n,datasetSim, id_row)
+
+    # calculate MT == transition matrix
+    # id -- getIDfromRow( riga+1 )
     # in un range le righe/colonne partono da 0 mentre le righe nel DB partono da 1
     print("Calcolo la matrice di Transizione MT")
-    #M = getMatrix(len(DB))
-    M = fillTMatrix(datasetSim, listArchi, n, Beta,id_row)
+    M = fillTMatrix(datasetSim, listArchi, n, Beta, id_row)
 
-    # calcolare matrice di teletrasporto
+    # calculate G == teleportation matrix
     #G = teletrasporto
     print("Calcolo la matrice di teletrasporto G")
-    G = fillGMatrix(Caltech101, DB,Beta, N_etichetta,id_row)
+    G = fillGMatrix(dataset, DB,Beta, N_etichetta,id_row)
 
-    # sommare le matrici
+    # calculate Z == sum between M and G
     print("Calcolo la nuova matrice di transizione Z")
     Z = getZMatrix(Beta,M,G)
 
-    print("Calcolo l'autovettore 1")
-    # trovare autovettore con autovalore 1
-    V = getAutovectorOf1(Z)
+    #take autovector
+    print("Calcolo l'autovettore")
+    V = getAutovector(Z)
+
+    # take m ID from V
     print("Stampo")
+    m_id = takeMID(V,m,id_row)
 
-    # prendere le m immagini più significative
-    m_id = takeMID(V,m)
-    m_id = [ DBFunc.getIDfromRow(x,id_row) for x in m_id]
+    #print m images
+    GF.printNIMG(m_id,dataset)
 
-    GF.printNIMG(m_id,Caltech101)
-
-
+# getGraph(dataset, n, datasetSim,id_row)
+# dataset: dataset of images
+# n: range of img for calculating arcs
+# datasetSim: img-img matrix, contains for each img a list of distances with all the other imgs
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# each img becomes a vertex and calculates for each img n arcs towards the n most similar imgs
+# listVertici: list of vertices (1 per img)
+# listArchi: arc list, tuples (IDimg, IDimg), n arcs for each node
 def getGraph(dataset, n, datasetSim,id_row):
     listVertici=[]
     listArchi=[]
@@ -71,7 +78,10 @@ def getGraph(dataset, n, datasetSim,id_row):
             listArchi.append((i, listSim[j+1][0]))
     return listVertici, listArchi
 
-#crea la matrice M con liste vuote 
+# getMatrix(N)
+# N: integer
+#
+# return/generates an NxN matrix od 0s
 def getMatrix(N):
     M = []
     for _ in range(N):
@@ -79,6 +89,15 @@ def getMatrix(N):
 
     return M
 
+# fillTMatrix(datasetSim, listArchi, n, Beta,id_row)
+# datasetSim: img-img matrix, contains for each img a list of distances with all the other imgs
+# listArchi: arc list, tuples (IDimg, IDimg)
+# n: number of arcs for each node
+# Beta
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# for each arc (i,j) fills the corresponding field in a matrix M with Beta/n
+# returns the matrix M
 def fillTMatrix(datasetSim, listArchi, n, Beta,id_row):
     value = Beta/n
     M=getMatrix(len(datasetSim))
@@ -107,10 +126,19 @@ def fillTMatrix_old(datasetSim, listArchi, n, Beta,id_row):
         M.append(d)
 
     return M
-        
-def fillGMatrix(Caltech101, DB,Beta, N_etichetta,id_row):
+
+#fillGMatrix(dataset, DB, Beta, N_etichetta,id_row)
+# dataset: dataset of images
+# DB: Database/matrix Image-Features
+# Beta
+# N_etichetta: ID of Label
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# for each img in the Label it fills the field in the matrix G with ( 1-Beta / Nimg in the label )
+# returns the matrix G
+def fillGMatrix(dataset, DB, Beta, N_etichetta,id_row):
     #prendere img dell'etichetta
-    DBLabel = task3.getDictDatasetLabel(Caltech101,DB,id_row)
+    DBLabel = task3.getDictDatasetLabel(dataset,DB,id_row)
     imgLabel= DBLabel[N_etichetta]
     print("numero immagini nella label: ", len(imgLabel))
     value = (1-Beta)/len(imgLabel)
@@ -132,6 +160,12 @@ def fillGMatrix(Caltech101, DB,Beta, N_etichetta,id_row):
 def getOuterEdges(listArchi):
      c = Counter(el[0] for el in listArchi)
 
+# getZMatrix(Beta,M,G)
+# Beta
+# M: matrix NxN
+# G: matrix NxN
+#
+# sum of 2 matrices
 def getZMatrix(Beta,M,G):
     Z = []
 
@@ -143,12 +177,16 @@ def getZMatrix(Beta,M,G):
         Z.append(d)
     return Z
 
-def getAutovectorOf1(Z):
+# getAutovector(Z)
+# Z: matrix NxN
+#
+# return/find the eigenvector with maximum eigenvalue
+def getAutovector(Z):
     res = []
     Z= numpy.array(Z)
     eigenvalues, eigenvectors = numpy.linalg.eig(Z.T)
 
-    indexArgMin1 = np.argmax(eigenvalues)
+    indexArgMin1 = numpy.argmax(eigenvalues)
 
     res=eigenvectors[:,indexArgMin1]
     res = res.real
@@ -156,7 +194,15 @@ def getAutovectorOf1(Z):
 
     return res
 
-def takeMID(V,m):
+# takeMID(V, m, id_row)
+# V: array of number
+# m: integer
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# takes the first m values in V (descending order)
+def takeMID(V, m, id_row):
     V = zip([z + 1 for z in range(len(V))], V)
     V = sorted(V, key=lambda tup: tup[1], reverse=True)
-    return [ i for (i,j) in V[0:m] ]
+    m_id = [ i for (i,j) in V[0:m] ]
+    m_id = [DBFunc.getIDfromRow(x, id_row) for x in m_id]
+    return m_id

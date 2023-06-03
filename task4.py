@@ -7,7 +7,7 @@ from task1 import Task1
 import task2
 import task3
 
-def processing(Caltech101,ReteNeurale):
+def processing(dataset,ReteNeurale):
     task1 = Task1()
 
     # take DB:
@@ -16,8 +16,8 @@ def processing(Caltech101,ReteNeurale):
     id_row = DBFunc.getDBID()
 
     # take IMG for the query
-    ID_img_query = GF.getIDImg(Caltech101)
-    QueryVector = task1.getVectorbyID(ID_img_query, Caltech101, ReteNeurale, ID_space)
+    ID_img_query = GF.getIDImg(dataset)
+    QueryVector = task1.getVectorbyID(ID_img_query, dataset, ReteNeurale, ID_space)
 
     # take ID of method
     ID_method = getIDMethod()
@@ -25,18 +25,18 @@ def processing(Caltech101,ReteNeurale):
     # calculates the class corresponding to the query image
     classID = -1
     if ID_method == 1:
-        classID= getCIDAVG(QueryVector ,Caltech101, DB, id_row)
+        classID= getCIDAVG(QueryVector ,dataset, DB, id_row)
     elif ID_method == 2:
-        classID = getCIDOneNN(QueryVector, Caltech101, DB, id_row)
+        classID = getCIDOneNN(QueryVector, dataset, DB, id_row)
     elif ID_method == 3:
         k = 20
-        classID = getCIDKNN(QueryVector, Caltech101, DB, id_row, k)
+        classID = getCIDKNN(QueryVector, dataset, DB, id_row, k)
     elif ID_method == 4:
         k = 20
-        classID = getCIDKNN_importance(QueryVector, Caltech101, DB, id_row, k)
+        classID = getCIDKNN_importance(QueryVector, dataset, DB, id_row, k)
 
     # print results
-    GF.printIMG(ID_img_query,"Label ottenuta: " + Caltech101.annotation_categories[classID],Caltech101)
+    GF.printIMG(ID_img_query,"Label ottenuta: " + dataset.annotation_categories[classID],dataset)
 
 # getIDMethod()
 #
