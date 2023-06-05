@@ -9,26 +9,15 @@ import genericFunction as GF
 import database as DBFunc
 import task3
 
-
-#
-
-
-def processing(Caltech101,ReteNeurale):
-    # prendere DB
-    ID_space = DBFunc.IDSpace()
-    id_row = DBFunc.getDBID()
-
-    DBLabel = task3.getDictDatasetLabel(dataset,DB,id_row)
-    DB= task3.shapeDBLabel(DBLabel)
-
-
-    # take k (latent features)
-    k = int(input("inserisci k (features latenti): "))
+def processing(dataset,ReteNeurale):
 
     # take DB
     ID_space = DBFunc.IDSpace()
     DB = DBFunc.getDB(ID_space)
     id_row = DBFunc.getDBID()
+
+    DBLabel = task3.getDictDatasetLabel(dataset, DB, id_row)
+    DB = task3.shapeDBLabel(DBLabel)
 
     # take k (latent features)
     k = int(input("inserisci k (features latenti): "))
