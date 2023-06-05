@@ -1,3 +1,4 @@
+import numpy
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,98 +13,79 @@ import task2
 import task3
 import task6
 
-def processing(Caltech101,ReteNeurale):
+def processing(dataset,ReteNeurale):
     task1 = Task1()
 
-    ID_img_query = GF.getIDImg(Caltech101)
+    ID_img_query = GF.getIDImg(dataset)
     # ask N image to print
-    n = int(input("insert n (numero immagini):"))
+    n = int(input("insert n (numero immagini da stampare):"))
 
-    # prendere DB
+    # take DB
     ID_Task= DBFunc.IDTaskIMG()
     ID_space = DBFunc.IDSpace()
     ID_Dec = task6.getRedDim()
 
     DB = DBFunc.getDB(ID_space)
     id_row = DBFunc.getDBID()
+
     DBLatent = DBFunc.getLatentDB(ID_Task,ID_space,ID_Dec)
 
-    # ask what latent features
-    nk = int(input("insert la feature latente (1 ... " + str(len(DBLatent)) + "):"))
-    nk= nk-1;
-
-    QueryVector = task1.getVectorbyID(ID_img_query, Caltech101, ReteNeurale, ID_space)
+    QueryVector = task1.getVectorbyID(ID_img_query, dataset, ReteNeurale, ID_space)
     QueryVector = getQueryVectorLatent(DB,QueryVector,ID_Dec,len(DBLatent))
 
-    QueryWeight= QueryVector[nk]
-    DBLatent = DBLatent[nk]
+    DBLatent = shapeDBLatent(DBLatent)
+    listaSim= task2.getSimilarityVector(QueryVector,DBLatent)
+    listaSim= sorted(listaSim, key=lambda tup: tup[1])
+    listaSim = [i for (i,j) in listaSim[0:n]]
+    listID = [DBFunc.getIDfromRow(i, id_row) for i in listaSim]
 
-    listaSim= getSimilarityVector(QueryWeight,DBLatent)
-
-    #listaSim = [i for (i,j) in listaSim]
-    img_query, label_query = Caltech101[ID_img_query]
-
-    printNImage(img_query, listaSim, n, Caltech101, id_row)
+    GF.printNImageCompare(ID_img_query, listID, dataset)
 
 
 def getQueryVectorLatent(DB,QueryVector,ID_Dec,k):
-    if ID_Dec == 1:
-        featuresLatenti = get_PCA(DB,QueryVector,k)
-    elif ID_Dec == 2:
-        featuresLatenti = get_SVD(DB,QueryVector,k)
-    elif ID_Dec == 3:
-        featuresLatenti = get_LDA(DB,QueryVector,k)
-    elif ID_Dec == 4:
-        featuresLatenti = get_KMeans(DB,QueryVector,k)
+    if ID_Dec == 1: #PCA
+        pca = PCA(n_components=k)
+        pca.fit(DB)
 
-    return featuresLatenti[0]
+        covarianza=pca.get_covariance()
+        featuresLatentiFeatures = pca.transform(covarianza)
 
-def get_SVD(DB,QueryVector,k):
-    u, s, vh = np.linalg.svd([QueryVector], full_matrices=True)
+        featuresLatentiFeatures= numpy.matrix(featuresLatentiFeatures).T
+        QueryVector = numpy.matrix(QueryVector).T
 
-    u = [ u[i][0:k] for i in range(len(u))]
-    return u
-def get_PCA(DB,QueryVector,k):
-    pca = PCA(n_components=k)
-    pca.fit(DB)
-    res= pca.transform([QueryVector])
+        QueryVector = numpy.array(featuresLatentiFeatures.dot(QueryVector).T)[0]
+    elif ID_Dec == 2: #SVD
+        u, s, vh = np.linalg.svd(DB, full_matrices=True)
+        featuresLatentiFeatures = vh[0:k]
 
-    return res
+        QueryVector = numpy.matrix(QueryVector).T
+        QueryVector = numpy.array(featuresLatentiFeatures.dot(QueryVector).T)[0]
+    elif ID_Dec == 3: #LDA
+        lda = LDA(n_components=k)
+        argMin = abs(task6.getArgMin(DB))
+        DB_p = [[DB[i][j] + argMin for j in range(len(DB[i]))] for i in range(len(DB))]
+        lda.fit(DB_p)
+        featuresLatentiFeatures= lda.exp_dirichlet_component_
 
-def get_LDA(DB,QueryVector,k):
-    lda = LDA(n_components=k)
-    argMin= abs(getArgMin(DB))
-    DB_p = [[DB[i][j]+argMin for j in range(len(DB[i]))] for i in range(len(DB))]
-    lda.fit(DB_p)
-    res= lda.transform([QueryVector])
+        QueryVector = numpy.matrix(QueryVector).T
+        QueryVector = numpy.array(featuresLatentiFeatures.dot(QueryVector).T)[0]
+    elif ID_Dec == 4: #KMeans
+        kmeans = KMeans(n_clusters=k, n_init='auto')
+        kmeans.fit(DB)
 
-    return res
+        centers= kmeans.cluster_centers_
+        res= []
+        for i in range(k):
+            distance= task2.distance(QueryVector,centers[i])
+            res.append(distance.detach().numpy().item())
+        QueryVector= res
 
-def getArgMin(DB):
-    argmin= DB[0][0]
-    for i in range(len(DB)):
-        if min(DB[i])<argmin:
-            argmin=min(DB[i])
-    return argmin
+    return QueryVector
 
-def get_KMeans(DB,QueryVector,k):
-    kmeans = KMeans(n_clusters=k, n_init='auto')
-    kmeans.fit(DB)
-    res = kmeans.transform([QueryVector])
+def shapeDBLatent(DBLatent):
+    for i in range(len(DBLatent)):
+        DBLatent[i]= sorted(DBLatent[i], key=lambda tup: tup[0])
+        DBLatent[i] = [j for (i,j) in DBLatent[i]]
 
-    return res
-
-def getSimilarityVector(QueryWeight,DBLatent):
-    for img in DBLatent:
-        DBLatent[1] = abs(QueryWeight - DBLatent[1])
-    return sorted(DBLatent, key=lambda tup: tup[1])
-
-def printNImage(img, list, n, dataset,id_row):
-    f, axarr = plt.subplots(2, n)
-    axarr[0][0].imshow(img)
-    axarr[0][0].set_title("immagine scelta")
-    for i in range(n):
-        imgRes, labelRes = dataset[ list[i][0]]
-        axarr[1][i].imshow(imgRes)
-        axarr[1][i].set_title("img num: " + str(i+1))
-    plt.show()
+    DBLatent = numpy.array(DBLatent).T
+    return DBLatent
