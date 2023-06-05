@@ -2,7 +2,9 @@ import torch
 import torch.nn as nn
 import torchvision
 import csv
+
 from NeuralNetwork import *
+import NeuralNetwork as NN
 import genericFunction as GF
 from tqdm import tqdm
 
@@ -42,7 +44,7 @@ class Task1():
 		for i in tqdm(range(dataset.__len__())):
 			img, label = dataset[i]
 			if i % 2 == 0 and torchvision.transforms.functional.get_image_num_channels(img) != 1:
-				tensor = GF.IMGtoTensor(img)
+				tensor = NN.IMGtoTensor(img)
 
 				vector_last=self.getFC(tensor,model)
 				vector_avgpool=self.getAvgpoolFlatten('avgpool')
@@ -61,7 +63,7 @@ class Task1():
 	# model: rete neurale
 	def Extractor(self, imgID, dataset, model):
 		img, label = dataset[imgID]
-		tensor = GF.IMGtoTensor(img)
+		tensor = NN.IMGtoTensor(img)
 
 		#prediction = model(tensor).squeeze(0).softmax(0)
 		#class_id = prediction.argmax().item()
@@ -75,7 +77,7 @@ class Task1():
 
 	def getVectorbyID(self, imgID, dataset, model, ID_space):
 		img, label = dataset[imgID]
-		tensor = GF.IMGtoTensor(img)
+		tensor = NN.IMGtoTensor(img)
 		resVector = []
 
 		vector_last = self.getFC(tensor, model)

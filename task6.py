@@ -8,21 +8,20 @@ from tqdm import tqdm
 import database as DBFunc
 import genericFunction as GF
 
-def processing(Caltech101,ReteNeurale):
-    # prendere DB
-    ID_space = DBFunc.IDSpace()
-    id_row= DBFunc.getDBID()
-
-    # prendere k (features latenti)
-    k = int(input("inserisci k (features latenti): "))
-
-    # prendere tecnica
-    redDimID = getRedDim()
+def processing(dataset,ReteNeurale):
 
     # take DB
+    ID_space = DBFunc.IDSpace()
     DB = DBFunc.getDB(ID_space)
+    id_row= DBFunc.getDBID()
 
-    #featuresLatenti = lista di obj, per ogni obj ha una lista con i k valori per le k feature latenti
+    # take k (latent features)
+    k = int(input("inserisci k (features latenti): "))
+
+    # take id of method
+    redDimID = getRedDim()
+
+    # featuresLatenti = list of obj, for each obj it has a list with the k values for the k latent features
     featuresLatenti = None
     if redDimID == 1:
         featuresLatenti = get_PCA(DB,k)
@@ -33,13 +32,15 @@ def processing(Caltech101,ReteNeurale):
     elif redDimID == 4:
         featuresLatenti = get_KMeans(DB,k)
 
-    #re shape featuresLatenti come lista di feature, ogni feature è una lista di coppie (ID obj, valore)
+    # reshape featuresLatenti come as a list of features, each feature is a list of pairs (id obj, value)
     featuresLatentiShape= shapeLatentFeatures(featuresLatenti,k,id_row)
 
-
+    # save latent features on file
     GF.saveOnFileLatentFeatures("featuresKTask6",featuresLatentiShape,ID_space,redDimID)
 
-
+# getRedDim()
+#
+# ask and return an ID for method
 def getRedDim():
     redDim = ''
     while redDim != '1' and redDim != '2' and redDim != '3' and redDim != '4':
@@ -48,12 +49,22 @@ def getRedDim():
             print("insert a valid selection")
     return int(redDim)
 
+# get_SVD(DB,k)
+# DB: Database/matrix Image-Features
+# k: number of latent features
+#
+# take k latent feature with SVD decomposition
 def get_SVD(DB,k):
     u, s, vh = np.linalg.svd(DB, full_matrices=True)
 
     u = [ u[i][0:k] for i in range(len(u))]
     return u
 
+# get_PCA(DB,k)
+# DB: Database/matrix Image-Features
+# k: number of latent features
+#
+# take k latent feature with PCA decomposition
 def get_PCA(DB,k):
     pca = PCA(n_components=k)
     pca.fit(DB)
@@ -61,9 +72,15 @@ def get_PCA(DB,k):
 
     return res
 
+# get_LDA(DB,k)
+# DB: Database/matrix Image-Features
+# k: number of latent features
+#
+# take k latent feature with LatentDirichletAllocation
 def get_LDA(DB,k):
     lda = LDA(n_components=k)
     argMin= abs(getArgMin(DB))
+    # brings all values ​​to positive
     DB_p = [[DB[i][j]+argMin for j in range(len(DB[i]))] for i in range(len(DB))]
     lda.fit(DB_p)
     res= lda.transform(DB_p)
@@ -77,6 +94,11 @@ def getArgMin(DB):
             argmin=min(DB[i])
     return argmin
 
+# get_KMeans(DB,k)
+# DB: Database/matrix Image-Features
+# k: number of latent features
+#
+# take k latent feature with KMeans, k distance from k cluster centroid
 def get_KMeans(DB,k):
     kmeans = KMeans(n_clusters=k, n_init='auto')
     kmeans.fit(DB)
@@ -84,6 +106,12 @@ def get_KMeans(DB,k):
 
     return res
 
+# shapeLatentFeatures(featuresLatenti,k,id_row)
+# featuresLatenti: list of obj, for each obj it has a list with the k values for the k latent features
+# k: number of latent features
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# reshape featuresLatenti come as a list of features, each feature is a list of pairs (id obj, value), each feature is sorted in descending order
 def shapeLatentFeatures(featuresLatenti,k,id_row):
     featuresLatentiShape = []
     for i in tqdm(range(k)):

@@ -3,38 +3,44 @@ import numpy
 
 import genericFunction as GF
 import database as DBFunc
+from task1 import Task1
 import task2
 import task3
-from task1 import Task1
-def processing(Caltech101,ReteNeurale):
+
+def processing(dataset,ReteNeurale):
     task1 = Task1()
 
-    # prendere DB
+    # take DB:
     ID_space=DBFunc.IDSpace()
     DB = DBFunc.getDB(ID_space)
+    id_row = DBFunc.getDBID()
 
-    # chiedere l'immagine di query
-    ID_img_query = GF.getIDImg(Caltech101)
-    QueryVector = task1.getVectorbyID(ID_img_query, Caltech101, ReteNeurale, ID_space)
+    # take IMG for the query
+    ID_img_query = GF.getIDImg(dataset)
+    QueryVector = task1.getVectorbyID(ID_img_query, dataset, ReteNeurale, ID_space)
 
-    #chidere che metodo utilizzare
+    # take ID of method
     ID_method = getIDMethod()
 
-    #calcolare la classe
-    classID = -1;
+    # calculates the class corresponding to the query image
+    classID = -1
     if ID_method == 1:
-        classID= getCIDAVG(QueryVector ,Caltech101, DB)
+        classID= getCIDAVG(QueryVector ,dataset, DB, id_row)
     elif ID_method == 2:
-        classID = getCIDOneNN(QueryVector, Caltech101, DB)
+        classID = getCIDOneNN(QueryVector, dataset, DB, id_row)
     elif ID_method == 3:
         k = 20
-        classID = getCIDKNN(QueryVector, Caltech101, DB, k)
+        classID = getCIDKNN(QueryVector, dataset, DB, id_row, k)
     elif ID_method == 4:
         k = 20
-        classID = getCIDKNN_importance(QueryVector, Caltech101, DB, k)
+        classID = getCIDKNN_importance(QueryVector, dataset, DB, id_row, k)
 
-    GF.printIMG(ID_img_query,"Label ottenuta: " + Caltech101.annotation_categories[classID],Caltech101)
+    # print results
+    GF.printIMG(ID_img_query,"Label ottenuta: " + dataset.annotation_categories[classID],dataset)
 
+# getIDMethod()
+#
+# ask and return an ID for method
 def getIDMethod():
     menu = {}
     menu['1'] = "AVG Feature Classified"
@@ -44,45 +50,69 @@ def getIDMethod():
     options = menu.keys()
     for entry in options:
         print(entry, menu[entry])
-    res= int(input("insert choice"))
+    res= int(input("insert choice: "))
     return res
 
-def getCIDAVG(imgQueryVector, dataset, DB):
-    DBLabelAVG = task3.getDatasetLabel(dataset, DB)
-    for i in DBLabelAVG:
-        vectorLeader = DBLabelAVG[i][0]
-        for img in DBLabelAVG[i]:
-            vectorLeader += img
-            vectorLeader = [x / 2 for x in vectorLeader]
-        DBLabelAVG[i] = vectorLeader
+# getCIDAVG(imgQueryVector, dataset, DB, id_row)
+# imgQueryVector: feature vector for the query image
+# dataset: dataset of images
+# DB: matrix Image-Features DB[i][j]= value for feature j in img i
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# calculates the class corresponding to the query image with similarity in Label-Feature DB
+# return ID of Class/Label
+def getCIDAVG(imgQueryVector, dataset, DB, id_row):
+    DictDBLabelAVG = task3.getDictDatasetLabel(dataset, DB, id_row)
+    DBLabelAVG = task3.shapeDBLabel(DictDBLabelAVG)
 
     simList = task2.getSimilarityVector(imgQueryVector, DBLabelAVG)
     simList = sorted(simList, key=lambda tup: tup[1])
 
     return int(simList[0][0]-1)
 
-def getCIDOneNN(imgQueryVector, dataset, DB):
+# getCIDAVG(imgQueryVector, dataset, DB, id_row)
+# imgQueryVector: feature vector for the query image
+# dataset: dataset of images
+# DB: matrix Image-Features DB[i][j]= value for feature j in img i
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+#
+# calculates the class corresponding to the query image associating the class of the closest img in the DB
+# return ID of Class/Label
+def getCIDOneNN(imgQueryVector, dataset, DB,id_row):
 
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
 
-    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0]) ]
+    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0],id_row) ]
     return label
 
-def getCIDKNN(imgQueryVector, dataset, DB, k):
+# getCIDAVG(imgQueryVector, dataset, DB, id_row)
+# imgQueryVector: feature vector for the query image
+# dataset: dataset of images
+# DB: matrix Image-Features DB[i][j]= value for feature j in img i
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+# k: range of images
+#
+# calculates the class corresponding to the query image associating the most common class (majority) in a range k
+# return ID of Class/Label
+def getCIDKNN(imgQueryVector, dataset, DB, id_row, k):
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
 
 
-    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0]) ]
+    img, label= dataset[ DBFunc.getIDfromRow(simList[0][0],id_row) ]
     listLabel= []
     for i in range(k):
-        img, label = dataset[DBFunc.getIDfromRow(simList[i][0])]
+        img, label = dataset[DBFunc.getIDfromRow(simList[i][0],id_row)]
         listLabel.append(label)
 
     return findMajorityElement(listLabel)
 
 
+# findMajorityElement(nums)
+# nums: vector of number
+#
+# return/find the element with the most appearances in the vector
 def findMajorityElement(nums):
     m = -1
     i = 0
@@ -96,7 +126,16 @@ def findMajorityElement(nums):
             i = i - 1
     return m
 
-def getCIDKNN_importance(imgQueryVector, dataset, DB, k):
+# getCIDAVG(imgQueryVector, dataset, DB, id_row)
+# imgQueryVector: feature vector for the query image
+# dataset: dataset of images
+# DB: matrix Image-Features DB[i][j]= value for feature j in img i
+# id_row: Row-ID matching matrix (row in matrix code - ID in dataset)
+# k: range of images
+#
+# calculates the class corresponding to the query image associating the most voted class (importance/proximity) in a range k
+# return ID of Class/Label
+def getCIDKNN_importance(imgQueryVector, dataset, DB, id_row, k):
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
 
@@ -107,7 +146,7 @@ def getCIDKNN_importance(imgQueryVector, dataset, DB, k):
 
     #remake the list with tuple: label, opposite of softmax distance(importance)
     for i in range(k):
-        img, label = dataset[DBFunc.getIDfromRow(simList[i][0])]
+        img, label = dataset[DBFunc.getIDfromRow(simList[i][0], id_row)]
         simList[i] = (label,(1 - simListValue[i]) )
 
     #list whit unique label
