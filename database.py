@@ -27,6 +27,13 @@ def IDTaskLabel():
             print("insert a valid selection")
     return int(ID_task)
 
+def IDTask():
+    ID_task = ''
+    while ID_task != '6' and ID_task != '7' and ID_task != '8' and ID_task != '9':
+        ID_task = input("select space: \n 6 - task6\n 7 - task7\n 8 - task8\n 9 - task9\n")
+        if (ID_task != '6' and ID_task != '7' and ID_task != '8' and ID_task != '9'):
+            print("insert a valid selection")
+    return int(ID_task)
 
 # getDB(ID_space)
 # ID_space: id of the vector space of the features to collect the data

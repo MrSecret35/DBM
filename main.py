@@ -29,6 +29,7 @@ import task7
 import task8
 import task9
 import task10
+import task11
 
 def main():
 	[caltech101, data_loader] = importCaltech.importData()
@@ -43,11 +44,12 @@ def main():
 	menu['5'] = "PageRank"
 	menu['6'] = "Features Latenti"
 	menu['7'] = "Features Latenti CP"
-	menu['8']="Features Latenti label-Label"
-	menu['9']="Features Latenti top K"
-	menu['10']="make a query LatentFeatures"
-	menu['13']="Exit"
-	menu['14']="Test"
+	menu['8'] = "Features Latenti label-Label"
+	menu['9'] = "Features Latenti top K"
+	menu['10']= "make a query LatentFeatures"
+	menu['11']= "Associating Label in LatentFeatures"
+	menu['13']= "Exit"
+	menu['14']= "Test"
 	while True:
 		options=menu.keys()
 		for entry in options:
@@ -77,6 +79,8 @@ def main():
 			task9.processing(caltech101, ReteNeurale)
 		elif selection == '10':
 			task10.processing(caltech101, ReteNeurale)
+		elif selection == '11':
+			task11.processing(caltech101, ReteNeurale)
 		elif selection == '13':
 			break
 		elif selection == '14':
