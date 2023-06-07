@@ -28,6 +28,7 @@ import task6
 import task7
 import task8
 import task9
+import task_6789
 import task10
 
 def main():
@@ -45,6 +46,7 @@ def main():
 	menu['7'] = "Features Latenti CP"
 	menu['8']="Features Latenti label-Label"
 	menu['9']="Features Latenti top K"
+	menu['6789'] = "make task with all DB"
 	menu['10']="make a query LatentFeatures"
 	menu['13']="Exit"
 	menu['14']="Test"
@@ -75,6 +77,8 @@ def main():
 			task8.processing(caltech101, ReteNeurale)
 		elif selection == '9':
 			task9.processing(caltech101, ReteNeurale)
+		elif selection == '6789':
+			task_6789.processing(caltech101, ReteNeurale)
 		elif selection == '10':
 			task10.processing(caltech101, ReteNeurale)
 		elif selection == '13':
