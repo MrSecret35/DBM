@@ -30,6 +30,7 @@ import task8
 import task9
 import task_6789
 import task10
+import task12
 
 def main():
 	[caltech101, data_loader] = importCaltech.importData()
@@ -48,6 +49,7 @@ def main():
 	menu['9']="Features Latenti top K"
 	menu['6789'] = "make task with all DB"
 	menu['10']="make a query LatentFeatures"
+	menu['12'] = "12"
 	menu['13']="Exit"
 	menu['14']="Test"
 	while True:
@@ -81,6 +83,8 @@ def main():
 			task_6789.processing(caltech101, ReteNeurale)
 		elif selection == '10':
 			task10.processing(caltech101, ReteNeurale)
+		elif selection == '12':
+			task12.processing(caltech101, ReteNeurale)
 		elif selection == '13':
 			break
 		elif selection == '14':
