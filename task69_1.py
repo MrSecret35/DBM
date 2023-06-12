@@ -34,7 +34,8 @@ def processing(dataset,ReteNeurale):
                     writerDistance.writerow(distanze)
 
 
-
+# takeFile(ID_Task,ID_space,ID_Dec)
+# take file
 def takeFile(ID_Task,ID_space,ID_Dec):
     fileDir = "Distance/EuclideanDistance_"
     if ID_Task == 6:
