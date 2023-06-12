@@ -15,11 +15,7 @@ import task5
 import task6
 
 def processing(dataset,ReteNeurale):
-    Beta=0.5
-
-    ID_img_query = GF.getIDImg(dataset)
-    # ask N image to print
-    n = int(input("insert n (numero immagini da stampare):"))
+    Beta=0.99
 
     # take DB
     ID_Task= DBFunc.IDTaskIMG()
