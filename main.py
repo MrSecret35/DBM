@@ -49,7 +49,7 @@ def main():
 	menu['9']="Features Latenti top K"
 	menu['6789'] = "make task with all DB"
 	menu['10']="make a query LatentFeatures"
-	menu['12'] = "12"
+	menu['12']= "PageRank Latent"
 	menu['13']="Exit"
 	menu['14']="Test"
 	while True:

@@ -96,7 +96,36 @@ def getLatentDB(ID_Task,ID_space,ID_Dec):
 
     return DB
 
+def getLatentDistanceDB(ID_Task,ID_space,ID_Dec):
+    fileDir="Distance/EuclideanDistance_"
+    if ID_Task == 6:
+        fileDir+="featuresKTask6"
+    elif ID_Task == 9:
+        fileDir+="featuresKTask9"
 
+    if ID_space == 1:
+        fileDir += "_Layer3"
+    elif ID_space == 2:
+        fileDir += "_AVGPool"
+    elif ID_space == 3:
+        fileDir += "_VectorLast"
+
+    if ID_Dec == 1:
+        fileDir+="_PCA"
+    elif ID_Dec == 2:
+        fileDir+="_SVD"
+    elif ID_Dec == 3:
+        fileDir += "_LDA"
+    elif ID_Dec == 4:
+        fileDir += "_KMeans"
+
+    fileDir += ".csv"
+    file = open(fileDir, 'r')
+
+    readerDB = csv.reader(file, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
+    DB_distance = numpy.array(list(readerDB))
+
+    return DB_distance
 def getDBID():
     file = open('Data\IDtoRow.csv', 'r')
     reader = csv.reader(file, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
