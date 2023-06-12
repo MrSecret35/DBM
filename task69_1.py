@@ -59,6 +59,6 @@ def takeFile(ID_Task,ID_space,ID_Dec):
         fileDir += "_KMeans"
 
     fileDir += ".csv"
-    file = open(fileDir, 'w')
+    file = open(fileDir, 'w',newline='')
 
     return file
