@@ -31,6 +31,7 @@ import task9
 import task69_1
 import task_6789
 import task10
+import task11
 import task12
 
 def main():
@@ -51,6 +52,7 @@ def main():
 	menu['691'] = "save Latent distance on file"
 	menu['6789'] = "make task with all DB"
 	menu['10']="make a query LatentFeatures"
+	menu['11']= "Associating Label in LatentFeatures"
 	menu['12']= "PageRank Latent"
 	menu['13']="Exit"
 	menu['14']="Test"
@@ -87,6 +89,8 @@ def main():
 			task_6789.processing(caltech101, ReteNeurale)
 		elif selection == '10':
 			task10.processing(caltech101, ReteNeurale)
+		elif selection == '11':
+			task11.processing(caltech101, ReteNeurale)
 		elif selection == '12':
 			task12.processing(caltech101, ReteNeurale)
 		elif selection == '13':
