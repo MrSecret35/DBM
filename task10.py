@@ -41,7 +41,13 @@ def processing(dataset,ReteNeurale):
 
     GF.printNImageCompare(ID_img_query, listID, dataset)
 
-
+# getQueryVectorLatent(DB,QueryVector,ID_Dec,k)
+# DB: Database/matrix Image-Latent Features
+# QueryVector: vector related to query obj
+# ID_Dec: id of the decomposition method
+# k: number of latent features
+#
+# transforms the queryVector into queryVector in latent space
 def getQueryVectorLatent(DB,QueryVector,ID_Dec,k):
     if ID_Dec == 1: #PCA
         pca = PCA(n_components=k)

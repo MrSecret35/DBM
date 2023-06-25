@@ -15,7 +15,9 @@ from torchvision.io import read_image, ImageReadMode
 from torchvision.models import resnet50, ResNet50_Weights
 
 
-
+# getIDImg(Caltech101)
+# Caltech101: dataset
+# takes as input an ID that identifies the img in dataset
 def getIDImg(Caltech101):
     ID_img_query = -1
     while ID_img_query == -1 or ID_img_query >= len(Caltech101):
@@ -24,6 +26,7 @@ def getIDImg(Caltech101):
             print("insert a valid selection (max " + str(len(Caltech101) - 1) + "):  ")
     return ID_img_query
 
+# printIMG(IDImg,text,dataset)
 def printIMG(IDImg,text,dataset):
     img, label = dataset[IDImg]
     plt.imshow(img)

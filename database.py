@@ -11,6 +11,8 @@ def IDSpace():
             print("insert a valid selection")
     return int(ID_space)
 
+# IDTaskIMG()
+# takes as input an ID that identifies the task to use between 6 / 9
 def IDTaskIMG():
     ID_task = ''
     while ID_task != '6' and ID_task != '9':
@@ -19,6 +21,8 @@ def IDTaskIMG():
             print("insert a valid selection")
     return int(ID_task)
 
+# IDTaskLabel()
+# takes as input an ID that identifies the task to use between 7 / 8
 def IDTaskLabel():
     ID_task = ''
     while ID_task != '7' and ID_task != '8':
@@ -27,6 +31,8 @@ def IDTaskLabel():
             print("insert a valid selection")
     return int(ID_task)
 
+# IDTask()
+# takes as input an ID that identifies the task to use between 6 / 7 / 8 / 9
 def IDTask():
     ID_task = ''
     while ID_task != '6' and ID_task != '7' and ID_task != '8' and ID_task != '9':
@@ -51,6 +57,10 @@ def getDB(ID_space):
     DB = numpy.array(list(readerVector))
     return DB
 
+# getDistanceDB(ID_Distance,ID_Space)
+# ID_Distance: id of the distance method
+# ID_space: id of the vector space of the features to collect the data
+# reads the desired DB (with obj-obj distance) from file and returns it as a matrix
 def getDistanceDB(ID_Distance,ID_Space):
     fileDistance = {}
     if ID_Distance == 1:
@@ -66,6 +76,11 @@ def getDistanceDB(ID_Distance,ID_Space):
 
         return DB_distance
 
+# getLatentDB(ID_Task,ID_space,ID_Dec)
+# ID_Task: id of the vector space of the features to collect the data
+# ID_space: id of the vector space of the features to collect the data
+# ID_Dec: id of the decomposition method
+# reads the desired DB (created with latent features) from file and returns it as a matrix
 def getLatentDB(ID_Task,ID_space,ID_Dec):
     fileDir="LatentFeatures/"
     if ID_Task == 6:
@@ -103,6 +118,11 @@ def getLatentDB(ID_Task,ID_space,ID_Dec):
 
     return DB
 
+# getLatentDistanceDB(ID_Task,ID_space,ID_Dec)
+# ID_Task: id of the vector space of the features to collect the data
+# ID_space: id of the vector space of the features to collect the data
+# ID_Dec: id of the decomposition method
+# reads the desired DB (with obj-obj distance (created with latent features)) from file and returns it as a matrix
 def getLatentDistanceDB(ID_Task,ID_space,ID_Dec):
     fileDir="Distance/EuclideanDistance_"
     if ID_Task == 6:
@@ -133,6 +153,9 @@ def getLatentDistanceDB(ID_Task,ID_space,ID_Dec):
     DB_distance = numpy.array(list(readerDB))
 
     return DB_distance
+
+# getDBID():
+#return IDtoRow file (relates the rows of a csv table (1,2,3,...) to the IDs of the dataset objs)
 def getDBID():
     file = open('Data\IDtoRow.csv', 'r')
     reader = csv.reader(file, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)

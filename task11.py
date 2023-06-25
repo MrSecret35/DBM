@@ -30,6 +30,7 @@ def processing(dataset,ReteNeurale):
 
 
     QueryVector = task1.getVectorbyID(ID_img_query, dataset, ReteNeurale, ID_space)
+    # transforms the queryVector image into the latent space
     if(ID_Task==7):
         QueryVector=getQueryVectorLatent(DB,QueryVector,ID_Dec,len(DBLatent))
     else:
@@ -47,6 +48,13 @@ def processing(dataset,ReteNeurale):
     # Print results
     GF.printIMG(ID_img_query,"Label ottenuta: " + dataset.annotation_categories[classID],dataset)
 
+# getQueryVectorLatent(DB,QueryVector,ID_Dec,k)
+# DB: Database/matrix Image-Latent Features
+# QueryVector: vector related to query obj
+# ID_Dec: id of the decomposition method
+# k: number of latent features
+#
+# transforms the queryVector into queryVector in latent space
 def getQueryVectorLatent(DB,QueryVector,ID_Dec,k):
     if ID_Dec == 5:
 
@@ -60,6 +68,13 @@ def getQueryVectorLatent(DB,QueryVector,ID_Dec,k):
 
         QueryVector = numpy.array(featuresLatentiFeatures.dot(QueryVector).T)[0]
     return QueryVector
+
+# getCIDAVG(imgQueryVector,DB)
+# imgQueryVector: feature vector for the query image
+# DB: matrix Label-Features DB[i][j]= value for feature j in img i
+#
+# calculates the class corresponding to the query image with similarity in Label-Feature DB
+# return ID of Class/Label
 def getCIDAVG(imgQueryVector, DB):
     simList = task2.getSimilarityVector(imgQueryVector, DB)
     simList = sorted(simList, key=lambda tup: tup[1])
