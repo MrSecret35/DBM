@@ -16,7 +16,7 @@ def processing(dataset,ReteNeurale):
     id_row= DBFunc.getDBID()
 
     # take k (latent features)
-    k = int(input("inserisci k (features latenti): "))
+    k = GF.getK(len(DB),len(DB[0]))
 
     # take id of method
     redDimID = getRedDim()

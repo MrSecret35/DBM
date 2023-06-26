@@ -15,11 +15,11 @@ def processing(Caltech101,ReteNeurale):
     id_row = DBFunc.getDBID()
     DBDistance = DBFunc.getDistanceDB(1, ID_space)
 
-    # take k (latent features)
-    k = int(input("inserisci k (features latenti): "))
-
     # take id of method
     redDimID = task6.getRedDim()
+
+    # take k (latent features)
+    k = GF.getK(len(DBDistance), len(DBDistance[0]))
 
     # featuresLatenti = list of obj, for each obj it has a list with the k values for the k latent features
     featuresLatenti = None
