@@ -20,7 +20,7 @@ def processing(dataset,ReteNeurale):
     DB = task3.shapeDBLabel(DBLabel)
 
     # take k (latent features)
-    k = int(input("inserisci k (features latenti): "))
+    k = GF.getK(len(DB),len(DB[0]))
 
     DB_tensor=tl.tensor(DB)
     # take k latent feature with Parafac decomposition

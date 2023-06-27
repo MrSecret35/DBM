@@ -13,14 +13,14 @@ def processing(dataset,ReteNeurale):
     id_row = DBFunc.getDBID()
     DB = DBFunc.getDB(ID_space)
 
-    # take k (latent features)
-    k = int(input("inserisci k (features latenti): "))
-
     # take id of method
     redDimID = task6.getRedDim()
 
     # take DB Label-Label
     DBLabelDistance = createDBLabelLabel(dataset, DB, id_row)
+
+    # take k (latent features)
+    k = GF.getK(len(DBLabelDistance), len(DBLabelDistance[0]))
 
     # featuresLatenti = list of obj, for each obj it has a list with the k values for the k latent features
     featuresLatenti = None

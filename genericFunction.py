@@ -19,12 +19,31 @@ from torchvision.models import resnet50, ResNet50_Weights
 # Caltech101: dataset
 # takes as input an ID that identifies the img in dataset
 def getIDImg(Caltech101):
+    channel = False
     ID_img_query = -1
-    while ID_img_query == -1 or ID_img_query >= len(Caltech101):
+    while ID_img_query == -1 or ID_img_query >= len(Caltech101) or channel:
         ID_img_query = int(input("insert an ID for an Image (odd number)(max " + str(len(Caltech101) - 1) + "):  "))
+        img, label = Caltech101[ID_img_query]
         if ID_img_query >= len(Caltech101):
             print("insert a valid selection (max " + str(len(Caltech101) - 1) + "):  ")
+
+        if torchvision.transforms.functional.get_image_num_channels(img) == 1:
+            channel = True
+            print("ID not valid ")
+        else:
+            channel = False
     return ID_img_query
+
+# getK(nSamples,nFeatures)
+# takes as input anumber k that identifies the number of latent features
+def getK(nSamples,nFeatures):
+    k = nSamples+nFeatures
+    while k> nSamples or k> nFeatures:
+        k = int(input("inserisci k (features latenti): "))
+        if k> nSamples or k> nFeatures:
+            print("insert a valid selection, MAX: min(" + str(nSamples) + "," + str(nFeatures) + "):  ")
+    return k
+
 
 # printIMG(IDImg,text,dataset)
 def printIMG(IDImg,text,dataset):
