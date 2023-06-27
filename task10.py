@@ -29,16 +29,22 @@ def processing(dataset,ReteNeurale):
     id_row = DBFunc.getDBID()
 
     DBLatent = DBFunc.getLatentDB(ID_Task,ID_space,ID_Dec)
-
     QueryVector = task1.getVectorbyID(ID_img_query, dataset, ReteNeurale, ID_space)
-    QueryVector = getQueryVectorLatent(DB,QueryVector,ID_Dec,len(DBLatent))
 
+    DBDistance = DBFunc.getDistanceDB(1, ID_space)
+
+    if ID_Task==9:
+        listaSim= task2.getSimilarityVector(QueryVector,DB)
+        QueryVector= [j.detach().numpy().item() for (i,j) in listaSim]
+        DB=DBDistance
+
+
+    QueryVector = getQueryVectorLatent(DB,QueryVector,ID_Dec,len(DBLatent))
     DBLatent = shapeDBLatent(DBLatent)
     listaSim= task2.getSimilarityVector(QueryVector,DBLatent)
     listaSim= sorted(listaSim, key=lambda tup: tup[1])
     listaSim = [i for (i,j) in listaSim[0:n]]
     listID = [DBFunc.getIDfromRow(i, id_row) for i in listaSim]
-
     GF.printNImageCompare(ID_img_query, listID, dataset)
 
 # getQueryVectorLatent(DB,QueryVector,ID_Dec,k)

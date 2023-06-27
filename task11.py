@@ -33,6 +33,11 @@ def processing(dataset,ReteNeurale):
     # transforms the queryVector image into the latent space
     if(ID_Task==7):
         QueryVector=getQueryVectorLatent(DB,QueryVector,ID_Dec,len(DBLatent))
+    elif ID_Task==9:
+        DBDistance = DBFunc.getDistanceDB(1, ID_space)
+        listaSim= task2.getSimilarityVector(QueryVector,DB)
+        QueryVector= [j.detach().numpy().item() for (i,j) in listaSim]
+        QueryVector = task10.getQueryVectorLatent(DBDistance, QueryVector, ID_Dec, len(DBLatent))
     else:
         QueryVector = task10.getQueryVectorLatent(DB, QueryVector, ID_Dec, len(DBLatent))
 

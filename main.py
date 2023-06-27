@@ -48,7 +48,7 @@ def main():
 	menu['6'] = "Features Latenti"
 	menu['7'] = "Features Latenti CP"
 	menu['8']="Features Latenti label-Label"
-	menu['9']="Features Latenti top K"
+	menu['9']="Features Latenti img-img"
 	menu['691'] = "save Latent distance on file"
 	menu['6789'] = "make task with all DB"
 	menu['10']="make a query LatentFeatures"
